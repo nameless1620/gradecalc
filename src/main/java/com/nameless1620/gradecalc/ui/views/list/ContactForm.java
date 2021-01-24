@@ -1,4 +1,4 @@
-package com.nameless1620.gradecalc.ui;
+package com.nameless1620.gradecalc.ui.views.list;
 
 import com.nameless1620.gradecalc.backend.entity.Company;
 import com.nameless1620.gradecalc.backend.entity.Contact;
@@ -11,7 +11,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
