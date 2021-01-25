@@ -5,6 +5,7 @@ import com.nameless1620.gradecalc.ui.views.list.ListView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -34,13 +35,15 @@ public class MainLayout extends AppLayout {
         H1 logo = new H1("Grade Calc");
         logo.addClassName("logo");
 
-        HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), logo);
+        Anchor logOut = new Anchor("/logout", "Log out");
+
+        HorizontalLayout header = new HorizontalLayout(new DrawerToggle(), logo, logOut);
         header.addClassName("header");
         header.setWidth("100%");
+        header.expand(logo); // push logOut to the right
         header.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
 
         addToNavbar(header);
     }
-
 
 }
