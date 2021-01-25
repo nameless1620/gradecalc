@@ -12,7 +12,17 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.HighlightConditions;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.server.PWA;
 
+@PWA(
+        name = "Grade Calc",
+        shortName = "Grades",
+        offlineResources = {
+                "./styles/offline.css",
+                "./images/offline.png"
+        }
+//        ,enableInstallPrompt = false // toggle intrusive PWA install prompt
+)
 @CssImport("./styles/shared-styles.css")
 public class MainLayout extends AppLayout {
 
