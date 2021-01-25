@@ -14,16 +14,18 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.springframework.stereotype.Component;
 
+@Component
 @Route(value = "", layout = MainLayout.class)
 @PageTitle("Contacts | Grade Calc")
 public class ListView extends VerticalLayout {
 
-    private final ContactForm form;
-    private Grid<Contact> grid = new Grid<>(Contact.class);
-    private TextField filterText = new TextField();
+    ContactForm form;
+    Grid<Contact> grid = new Grid<>(Contact.class);
+    TextField filterText = new TextField();
 
-    private ContactService contactService;
+    ContactService contactService;
 
     public ListView(ContactService contactService,
                     CompanyService companyService) {
