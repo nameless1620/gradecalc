@@ -46,6 +46,17 @@ public class ListView extends VerticalLayout {
         closeEditor();
     }
 
+//    public class TempConverter
+//    {
+//        public static void main(String[] args)
+//        {
+//            int fah = 212;
+//            int cel = 5/9 * (fah - 32);
+//
+//            System.out.println(fah + "F --> " + cel + "C");
+//        }
+//    }
+
     private void deleteContact(ContactForm.DeleteEvent evt) {
         contactService.delete(evt.getContact());
         updateList();
