@@ -48,6 +48,7 @@ public class ListView extends VerticalLayout {
         closeEditor();
     }
 
+
     private void deleteContact(ContactForm.DeleteEvent evt) {
         contactService.delete(evt.getContact());
         updateList();

@@ -1,9 +1,15 @@
 package com.nameless1620.gradecalc.ui;
 
+import com.nameless1620.gradecalc.ui.views.calculator.CalculatorView;
 import com.nameless1620.gradecalc.ui.views.dashboard.DashboardView;
 import com.nameless1620.gradecalc.ui.views.list.ListView;
+import com.nameless1620.gradecalc.ui.views.sandbox.AryaSandboxView;
+import com.nameless1620.gradecalc.ui.views.sandbox.BhoomiSandboxView;
+import com.nameless1620.gradecalc.ui.views.sandbox.IsabellaSandboxView;
+import com.nameless1620.gradecalc.ui.views.sandbox.JoshikaSandboxView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;
@@ -37,7 +43,12 @@ public class MainLayout extends AppLayout {
 
         addToDrawer(new VerticalLayout(
                 listLink,
-                new RouterLink("Dashboard", DashboardView.class)
+                new RouterLink("Dashboard", DashboardView.class),
+                new RouterLink("Calculator", CalculatorView.class),
+                new RouterLink("Arya Sandbox", AryaSandboxView.class),
+                new RouterLink("Joshika Sandbox", JoshikaSandboxView.class),
+                new RouterLink("Bhoomi Sandbox", BhoomiSandboxView.class),
+                new RouterLink("Isabella Sandbox", IsabellaSandboxView.class)
         ));
     }
 
