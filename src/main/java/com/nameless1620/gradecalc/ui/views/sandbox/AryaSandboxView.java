@@ -7,7 +7,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import jdk.jfr.internal.Logger;
 
 @PageTitle("GradeCalc | Arya Sandbox")
 @Route(value = "aryasandbox", layout = MainLayout.class)
