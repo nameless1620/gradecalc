@@ -8,32 +8,44 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @PageTitle("GradeCalc | Joshika Sandbox")
 @Route(value = "joshikasandbox", layout = MainLayout.class)
 public class JoshikaSandboxView extends VerticalLayout {
 
+    List<String> grades = new ArrayList<String>();
+
     public JoshikaSandboxView()
     {
         addClassName("joshikasandbox-view");
-        TextField hello = new TextField();
-        Button button = new Button("Joshika!");
-        button.addClickListener(click -> add(new Paragraph(helloName(hello.getValue()))));
-        add(hello, button);
+        TextField grade = new TextField();
+        Button button = new Button("Add Grade");
+        button.addClickListener(click -> add(new Paragraph(addGrade(grade.getValue()))));
+        add(grade, button);
+
 
     }
 
-    private String helloName(String name) {
-        return "Hello "+name+"!";
+    private String addGrade(String grade) {
 
-        //Description of resource and why to use it
-        //Link to resource
+        /*
+        1. convert string into number
+        2. add number to array
+        3. print the list of numbers
 
-        //Description of resource and why to use it
-        //Link to resource
+         */
+       // int grade = Integer.parseInt(name);
+        String allGrades = "";
+        grades.add(grade);
+        for(int gradeIterator = 0; gradeIterator < grades.size(); gradeIterator++){
+            allGrades += grades.get(gradeIterator);
 
-        //Description of resource and why to use it
-        //Link to resource
+        }
+        //return "Hello "+name+"!";
+        return allGrades;
     }
 
 
