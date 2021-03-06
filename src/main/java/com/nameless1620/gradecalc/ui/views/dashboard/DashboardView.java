@@ -13,8 +13,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import java.util.Map;
-
 @PageTitle("Dashboard | Grade Calc")
 @Route(value = "dashboard", layout = MainLayout.class)
 public class DashboardView extends VerticalLayout {
@@ -31,22 +29,22 @@ public class DashboardView extends VerticalLayout {
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
 
         add(
-                getContactStats(),
-                getCompaniesChart()
+                getContactStats()
+//                getCompaniesChart()
         );
 
     }
-
-    private Component getCompaniesChart() {
-        Chart chart = new Chart(ChartType.PIE);
-
-        DataSeries dataSeries = new DataSeries();
-        Map<String, Integer> stats = companyService.getStats();
-        stats.forEach((name, number) ->
-                dataSeries.add(new DataSeriesItem(name, number)));
-        chart.getConfiguration().setSeries(dataSeries);
-        return chart;
-    }
+//
+//    private Component getCompaniesChart() {
+//        Chart chart = new Chart(ChartType.PIE);
+//
+//        DataSeries dataSeries = new DataSeries();
+//        Map<String, Integer> stats = companyService.getStats();
+//        stats.forEach((name, number) ->
+//                dataSeries.add(new DataSeriesItem(name, number)));
+//        chart.getConfiguration().setSeries(dataSeries);
+//        return chart;
+//    }
 
     private Span getContactStats() {
         Span stats = new Span(contactService.count() + "contacts");

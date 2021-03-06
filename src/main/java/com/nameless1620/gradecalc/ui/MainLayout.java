@@ -9,7 +9,6 @@ import com.nameless1620.gradecalc.ui.views.sandbox.IsabellaSandboxView;
 import com.nameless1620.gradecalc.ui.views.sandbox.JoshikaSandboxView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H1;

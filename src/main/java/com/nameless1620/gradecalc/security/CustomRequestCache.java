@@ -1,11 +1,16 @@
 package com.nameless1620.gradecalc.security;
 
+import com.nameless1620.gradecalc.ui.views.login.LoginView;
+import com.vaadin.flow.server.VaadinServletRequest;
+import com.vaadin.flow.server.VaadinServletResponse;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-class CustomRequestCache extends HttpSessionRequestCache {
+public class CustomRequestCache extends HttpSessionRequestCache {
 
     @Override
     public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
@@ -14,4 +19,17 @@ class CustomRequestCache extends HttpSessionRequestCache {
         }
     }
 
+    public String resolveRedirectUrl() {
+        SavedRequest savedRequest = getRequest(VaadinServletRequest.getCurrent().getHttpServletRequest(), VaadinServletResponse.getCurrent().getHttpServletResponse());
+        if(savedRequest instanceof DefaultSavedRequest) {
+            final String requestURI = ((DefaultSavedRequest) savedRequest).getRequestURI(); //
+            // check for valid URI and prevent redirecting to the login view
+            if (requestURI != null && !requestURI.isEmpty() && !requestURI.contains(LoginView.ROUTE)) { //
+                return requestURI.startsWith("/") ? requestURI.substring(1) : requestURI; //
+            }
+        }
+
+        // if everything fails, redirect to the main view
+        return "";
+    }
 }
