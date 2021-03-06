@@ -12,31 +12,40 @@ import com.vaadin.flow.router.Route;
 @Route(value = "aryasandbox", layout = MainLayout.class)
 public class AryaSandboxView extends VerticalLayout {
 
+
     public AryaSandboxView()
     {
         addClassName("aryasandbox-view");
 
-        TextField temperature = new TextField("Temperature");
+        TextField temperature = new TextField("Grade!");
         Button calculate = new Button("Calculate!");
 
-        calculate.addClickListener(click -> add(new Paragraph(calculate(temperature.getValue()))));
+        calculate.addClickListener(click -> add(new Paragraph(calculate(35,10))));
         add(temperature, calculate);
+
+        System.out.println();
     }
 
-    private String calculate (String temperature) {
+    private String calculate (double questions, double wrongQuestions) {
 
         String output = "";
+        double grade = (questions - wrongQuestions) / questions;
 
-        try {
-            float fah = Float.parseFloat(temperature);
-            float cel = ((float)5/9) * (fah - 32);
-            output = String.valueOf(fah + "F --> " + cel + "C");
-        }
-        catch (NumberFormatException e) {
-            output = "Not a valid number";
-        }
+//        try {
+//            float fah = Float.parseFloat(temperature);
+//            float cel = ((float)5/9) * (fah - 32);
+//            output = String.valueOf(fah + "F --> " + cel + "C");
+//        }
+//        catch (NumberFormatException e) {
+//            output = "Not a valid number";
+//        }
+        output += ("Your new grade is " + Double.toString(grade) + ".");
 
         return output;
     }
-
+/*
+    -taking averages
+    - taking grade percents
+    - taking weightage points
+ */
 }
