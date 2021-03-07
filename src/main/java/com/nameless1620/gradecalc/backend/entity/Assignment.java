@@ -7,6 +7,8 @@ public class Assignment extends AbstractEntity {
     private String name;
     private double questions;
     private double wrongQuestions;
+    private double grade;
+
 
     public Assignment(){
 
@@ -15,6 +17,7 @@ public class Assignment extends AbstractEntity {
         this.name = name;
         this.questions = questions;
         this.wrongQuestions = wrongQuestions;
+        this.grade = calculate(questions, wrongQuestions);
     }
 
     public String getName(){
@@ -39,5 +42,13 @@ public class Assignment extends AbstractEntity {
 
     public void setWrongQuestions(double wrongQuestions) {
         this.wrongQuestions = wrongQuestions;
+    }
+    private double calculate (double questions, double wrongQuestions) {
+
+        return (questions - wrongQuestions) / questions;
+    }
+
+    public double getGrade() {
+        return grade;
     }
 }

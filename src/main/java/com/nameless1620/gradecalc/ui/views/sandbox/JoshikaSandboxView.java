@@ -25,7 +25,7 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     public JoshikaSandboxView()
     {
-        assignmentGrid.setColumns("name", "questions", "wrongQuestions");
+        assignmentGrid.setColumns("name", "questions", "wrongQuestions","grade");
         assignmentGrid.setItems(assignments);
         addClassName("joshikasandbox-view");
         TextField assignment = new TextField("Assignment","Ex: Test 1");
