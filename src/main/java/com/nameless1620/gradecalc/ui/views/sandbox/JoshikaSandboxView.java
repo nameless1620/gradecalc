@@ -14,6 +14,7 @@ import com.vaadin.flow.router.Route;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -41,9 +42,16 @@ public class JoshikaSandboxView extends VerticalLayout {
                     wrongQuestions.getValue());
             assignmentGrid.getDataProvider().refreshAll();
         });
+        Button deleteAssignment = new Button("Remove Assignment", buttonClickEvent -> {
+            deleteAssignment();
+            assignmentGrid.getDataProvider().refreshAll();
+        });
         add(assignment, questions, wrongQuestions, addAssignment, assignmentGrid);
 
-
+        Button updateAssignment = new Button("Edit Assignment", buttonClickEvent -> {
+            updateAssignment();
+        });
+        add(assignment, questions, wrongQuestions, addAssignment, assignmentGrid, deleteAssignment, updateAssignment);
     }
 
     //TODO: Add a method to delete an assignment (hint, look at add assignment)
@@ -54,6 +62,17 @@ public class JoshikaSandboxView extends VerticalLayout {
         Assignment assignment = new Assignment(name, Double.parseDouble(questions), Double.parseDouble(wrongQuestions));
         assignments.add(assignment);
     }
+    private void deleteAssignment(){
 
+        Set<Assignment> edit = assignmentGrid.getSelectedItems();
+        for(Iterator<Assignment> assignmentIterator = edit.iterator(); assignmentIterator.hasNext(); ){
+            Assignment selected = assignmentIterator.next();
+            assignments.remove(selected);
+        }
+    }
+
+    private void updateAssignment(){
+
+    }
 
 }
