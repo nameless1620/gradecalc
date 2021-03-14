@@ -10,9 +10,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 @PageTitle("GradeCalc | Joshika Sandbox")
@@ -36,9 +37,14 @@ public class JoshikaSandboxView extends VerticalLayout {
                 assignment.getValue(),
                 questions.getValue(),
                 wrongQuestions.getValue()))));
-        add(assignment, questions, wrongQuestions, addAssignment, assignmentGrid);
+        Button deleteAssignment = new Button("Remove Assignment", buttonClickEvent ->
+            deleteAssignment()
+        );
 
-
+        Button updateAssignment = new Button("Edit Assignment", buttonClickEvent -> {
+            updateAssignment();
+        });
+        add(assignment, questions, wrongQuestions, addAssignment, assignmentGrid, deleteAssignment, updateAssignment);
     }
 
     //TODO: Add a method to delete an assignment (hint, look at add assignment)
@@ -56,6 +62,17 @@ public class JoshikaSandboxView extends VerticalLayout {
 
         return allGrades;
     }
+    private void deleteAssignment(){
 
+        Set<Assignment> edit = assignmentGrid.getSelectedItems();
+        for(Iterator<Assignment> assignmentIterator = edit.iterator(); assignmentIterator.hasNext(); ){
+            Assignment selected = assignmentIterator.next();
+            assignments.remove(selected);
+        }
+    }
+
+    private void updateAssignment(){
+
+    }
 
 }
