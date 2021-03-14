@@ -41,18 +41,12 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     }
 
+    //TODO: Add a method to delete an assignment (hint, look at add assignment)
+    //TODO: Add a method to update an assignment (hint, look at add assignment)
+    //TODO: Add a way to categorize an assignment (hint, you will need to update backend.entity.Assignment.java)
+
     private String addAssignment(String name, String questions, String wrongQuestions) {
 
-        /*
-        1. convert string into number
-        2. add number to array -done
-        3. print the list of numbers -done
-        4. capture total questions and wrong questions
-        5. display total questions, wrong questions, and grade on separate rows
-
-
-         */
-       // int grade = Integer.parseInt(name);
         String allGrades = "";
         Assignment assignment = new Assignment(name, Double.parseDouble(questions), Double.parseDouble(wrongQuestions));
         assignments.add(assignment);
