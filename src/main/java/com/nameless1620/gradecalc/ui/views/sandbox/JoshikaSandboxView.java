@@ -7,12 +7,15 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @PageTitle("GradeCalc | Joshika Sandbox")
@@ -31,11 +34,13 @@ public class JoshikaSandboxView extends VerticalLayout {
         TextField assignment = new TextField("Assignment","Ex: Test 1");
         TextField questions = new TextField("Number of Questions", "Ex: 35");
         TextField wrongQuestions = new TextField("Number of Wrong Questions","Ex: 4");
-        Button addAssignment = new Button("Add Assignment");
-        addAssignment.addClickListener(click -> add(new Paragraph(addAssignment(
-                assignment.getValue(),
-                questions.getValue(),
-                wrongQuestions.getValue()))));
+        Button addAssignment = new Button("Add Assignment", event -> {
+            addAssignment(
+                    assignment.getValue(),
+                    questions.getValue(),
+                    wrongQuestions.getValue());
+            assignmentGrid.getDataProvider().refreshAll();
+        });
         add(assignment, questions, wrongQuestions, addAssignment, assignmentGrid);
 
 
@@ -45,16 +50,9 @@ public class JoshikaSandboxView extends VerticalLayout {
     //TODO: Add a method to update an assignment (hint, look at add assignment)
     //TODO: Add a way to categorize an assignment (hint, you will need to update backend.entity.Assignment.java)
 
-    private String addAssignment(String name, String questions, String wrongQuestions) {
-
-        String allGrades = "";
+    private void addAssignment(String name, String questions, String wrongQuestions) {
         Assignment assignment = new Assignment(name, Double.parseDouble(questions), Double.parseDouble(wrongQuestions));
         assignments.add(assignment);
-        for(int gradeIterator = 0; gradeIterator < assignments.size(); gradeIterator++){
-            allGrades += assignments.get(gradeIterator).toString();
-        }
-
-        return allGrades;
     }
 
 
