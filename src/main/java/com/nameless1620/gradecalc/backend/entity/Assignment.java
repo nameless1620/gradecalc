@@ -8,6 +8,7 @@ public class Assignment extends AbstractEntity {
     private double questions;
     private double wrongQuestions;
     private double grade;
+    private boolean doubleWeighted;
 
 
     public Assignment(){
