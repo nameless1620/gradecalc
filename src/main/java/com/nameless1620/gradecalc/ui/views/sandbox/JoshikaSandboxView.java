@@ -64,8 +64,8 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
     private void deleteAssignment(){
 
-        Set<Assignment> edit = assignmentGrid.getSelectedItems();
-        for(Iterator<Assignment> assignmentIterator = edit.iterator(); assignmentIterator.hasNext(); ){
+        Set<Assignment> delete = assignmentGrid.getSelectedItems();
+        for(Iterator<Assignment> assignmentIterator = delete.iterator(); assignmentIterator.hasNext(); ){
             Assignment selected = assignmentIterator.next();
             assignments.remove(selected);
         }

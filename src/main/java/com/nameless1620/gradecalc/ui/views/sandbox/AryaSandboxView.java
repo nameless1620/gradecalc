@@ -28,7 +28,6 @@ public class AryaSandboxView extends VerticalLayout {
 
     List<Assignment> assignments = new ArrayList<Assignment>();
     Grid<Assignment> assignmentGrid = new Grid<>(Assignment.class);
-    List<Course> courses = new ArrayList<Course>();
     Grid<Course> courseGrid = new Grid<>(Course.class);
 
 
@@ -36,12 +35,12 @@ public class AryaSandboxView extends VerticalLayout {
     {
         this.courseService = courseService;
         configureCourseGrid();
+        configureAssignmentGrid();
 
 
         addClassName("aryasandbox-view");
 
-        assignmentGrid.setColumns("name", "questions", "wrongQuestions","grade");
-        assignmentGrid.setItems(assignments);
+
 
         TextField assignment = new TextField("Assignment","Ex: Test 1");
         TextField questions = new TextField("Number of Questions", "Ex: 35");
@@ -57,7 +56,6 @@ public class AryaSandboxView extends VerticalLayout {
             deleteAssignment();
             assignmentGrid.getDataProvider().refreshAll();
         });
-        add(assignment, questions, wrongQuestions, addAssignment, assignmentGrid);
 
         Button updateAssignment = new Button("Edit Assignment", buttonClickEvent -> {
             updateAssignment();
@@ -99,13 +97,39 @@ public class AryaSandboxView extends VerticalLayout {
 //        courseGrid.asSingleSelect().addValueChangeListener(evt -> editContact(evt.getValue()));
     }
 
+    private void configureAssignmentGrid() {
+        assignmentGrid.setColumns("name", "questions", "wrongQuestions","grade");
+
+
+
+    }
+
+
+
     private void updateCourseList() {
         courseGrid.setItems(courseService.findAll());
     }
 
+
+    private void updateAssignmentList(){
+
+        Set<Course> courses = courseGrid.getSelectedItems();
+        if(courses.size() > 0){
+            Iterator<Course> iter = courses.iterator();
+            Course selectedCourse = iter.next();
+            assignmentGrid.setItems(selectedCourse.getAssignments());
+        }
+
+    }
+
     private void addAssignment(String name, String questions, String wrongQuestions) {
         Assignment assignment = new Assignment(name, Double.parseDouble(questions), Double.parseDouble(wrongQuestions));
-        assignments.add(assignment);
+     //   assignments.add(assignment);
+        Set<Course> courses = courseGrid.getSelectedItems();
+        Iterator<Course> iter = courses.iterator();
+        Course selectedCourse = iter.next();
+        selectedCourse.addAssignments(assignment);
+
     }
     private void deleteAssignment(){
 
