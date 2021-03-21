@@ -1,6 +1,10 @@
 package com.nameless1620.gradecalc.ui.views.sandbox;
 
 import com.nameless1620.gradecalc.backend.entity.Assignment;
+import com.nameless1620.gradecalc.backend.entity.Company;
+import com.nameless1620.gradecalc.backend.entity.Course;
+import com.nameless1620.gradecalc.backend.service.CompanyService;
+import com.nameless1620.gradecalc.backend.service.CourseService;
 import com.nameless1620.gradecalc.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -20,12 +24,20 @@ import java.util.Set;
 @Route(value = "aryasandbox", layout = MainLayout.class)
 public class AryaSandboxView extends VerticalLayout {
 
+    private final CourseService courseService;
+
     List<Assignment> assignments = new ArrayList<Assignment>();
     Grid<Assignment> assignmentGrid = new Grid<>(Assignment.class);
+    List<Course> courses = new ArrayList<Course>();
+    Grid<Course> courseGrid = new Grid<>(Course.class);
 
 
-    public AryaSandboxView()
+    public AryaSandboxView(CourseService courseService)
     {
+        this.courseService = courseService;
+        configureCourseGrid();
+
+
         addClassName("aryasandbox-view");
 
         assignmentGrid.setColumns("name", "questions", "wrongQuestions","grade");
@@ -50,7 +62,9 @@ public class AryaSandboxView extends VerticalLayout {
         Button updateAssignment = new Button("Edit Assignment", buttonClickEvent -> {
             updateAssignment();
         });
-        add(assignment, questions, wrongQuestions, addAssignment, assignmentGrid, deleteAssignment, updateAssignment);
+        add(courseGrid, assignment, questions, wrongQuestions, addAssignment, assignmentGrid, deleteAssignment, updateAssignment);
+
+        updateCourseList();
 
 
 //        TextField testGrade = new TextField("Grade!");
@@ -68,6 +82,25 @@ public class AryaSandboxView extends VerticalLayout {
 //        add(testAverage,testAmount, average);
 //
 //        System.out.println();
+    }
+
+    private void configureCourseGrid() {
+        courseGrid.addClassName("course-grid");
+//        courseGrid.setSizeFull();
+        courseGrid.removeColumnByKey("assignments");
+        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade");
+//        courseGrid.addColumn(contact -> {
+//            Company company = contact.getCompany();
+//            return company == null ? "-": company.getName();
+//        }).setHeader("Company");
+
+        courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+
+//        courseGrid.asSingleSelect().addValueChangeListener(evt -> editContact(evt.getValue()));
+    }
+
+    private void updateCourseList() {
+        courseGrid.setItems(courseService.findAll());
     }
 
     private void addAssignment(String name, String questions, String wrongQuestions) {

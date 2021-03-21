@@ -1,12 +1,16 @@
 package com.nameless1620.gradecalc.backend.entity;
 
+import javax.persistence.*;
 import java.util.*;
 
+@Entity
 public class Course extends AbstractEntity {
+
+    @OneToMany
     private List<Assignment> assignments = new ArrayList<Assignment>();
   //  private List<AssignmentCategory> assignments = new ArrayList<Assignment>();
-    private Map <String, Double> assignmentCategories;
-    private double weightagePerAssignmentCategory;
+//    private Map <String, Double> assignmentCategories;
+//    private double weightagePerAssignmentCategory;
 
     private String courseName;
     private double actualGrade;
