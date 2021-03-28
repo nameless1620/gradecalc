@@ -6,7 +6,7 @@ import java.util.*;
 @Entity
 public class Course extends AbstractEntity {
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     private List<Assignment> assignments = new ArrayList<Assignment>();
   //  private List<AssignmentCategory> assignments = new ArrayList<Assignment>();
 //    private Map <String, Double> assignmentCategories;

@@ -87,6 +87,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         if(selectedCourse != null){
             assignmentGrid.setItems(selectedCourse.getAssignments());
         }
+        
 
 
     //    Set<Course> courses = courseGrid.getSelectedItems();
