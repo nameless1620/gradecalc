@@ -15,6 +15,9 @@ public class Course extends AbstractEntity {
     private String courseName;
     private double actualGrade;
     private double desiredGrade;
+    private double testGradeAverage;
+    private double testCategoryWeight;
+    private double testCategoryPoints;
 
     public Course (){
 
@@ -53,8 +56,31 @@ public class Course extends AbstractEntity {
         return actualGrade;
     }
 
+    //TODO remove hard coding
     private void calculateGrade() {
+        double testSum = 0;
+        for (int i = 0; i < assignments.size(); i++) {
+            testSum += assignments.get(i).getGrade();
+        };
+
+        this.testGradeAverage = testSum / assignments.size();
+        this.testCategoryPoints = testGradeAverage * testCategoryWeight;
+        // category weight * test average to get points that affect our grade
+        // 1 test w 96 average, 50% weightage makes 48 points of grade
         this.actualGrade = 96;
+    }
+
+    public double getTestGradeAverage() {
+        return testGradeAverage;
+    }
+
+
+    public double getTestCategoryWeight() {
+        return testCategoryWeight;
+    }
+
+    public void setTestCategoryWeight(double testCategoryWeight) {
+        this.testCategoryWeight = testCategoryWeight;
     }
 }
 /*

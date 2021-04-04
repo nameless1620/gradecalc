@@ -9,6 +9,7 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
@@ -74,7 +75,7 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     private void updateCourseList() {
 
-        courseGrid.setItems(courseService.findAll());
+        courseGrid.getDataProvider().refreshAll();
         updateAssignmentList();
 
     }
@@ -159,7 +160,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         Iterator<Course> iter = courses.iterator();
         Course selectedCourse = iter.next();
         selectedCourse.addAssignments(assignment);
-
+        updateCourseList();
     }
     private void deleteAssignment(){
 
@@ -179,7 +180,8 @@ public class JoshikaSandboxView extends VerticalLayout {
         courseGrid.addClassName("course-grid");
 //        courseGrid.setSizeFull();
         courseGrid.removeColumnByKey("assignments");
-        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade");
+        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade", "testGradeAverage");
+        courseGrid.setItems(courseService.findAll());
 //        courseGrid.addColumn(contact -> {
 //            Company company = contact.getCompany();
 //            return company == null ? "-": company.getName();
@@ -194,6 +196,35 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     private void configureAssignmentGrid() {
         assignmentGrid.setColumns("name", "questions", "wrongQuestions","grade");
+//        Grid.Column<Assignment> nameColumn = assignmentGrid.addColumn(Assignment::getQuestions)
+//                .setHeader("Name");
+//        Grid.Column<Assignment> questionsColumn = assignmentGrid.addColumn(Assignment::getQuestions)
+//                .setHeader("Questions");
+//        Grid.Column<Assignment> wrongQuestionsColumn = assignmentGrid.addColumn(Assignment::getQuestions)
+//                .setHeader("Wrong Questions");
+//        Binder<Assignment> binder = new Binder<>(Assignment.class);
+//        assignmentGrid.getEditor().setBinder(binder);
+//
+//        TextField assignmentNameField = new TextField();
+//        TextField assignmentQuestionsField = new TextField();
+//        TextField assignmentWrongQuestionsField = new TextField();
+//
+//        assignmentNameField.getElement()
+//                .addEventListener("keydown",
+//                        event -> assignmentGrid.getEditor().cancel())
+//                .setFilter("event.key === 'Tab' && event.shiftKey");
+//        binder.bind(assignmentNameField, "name");
+//        nameColumn.setEditorComponent(assignmentNameField);
+//
+//        assignmentGrid.addItemDoubleClickListener(event -> {
+//            assignmentGrid.getEditor().editItem(event.getItem());
+//            assignmentNameField.focus();
+//        });
+//
+//        binder.addValueChangeListener(event -> {
+//            assignmentGrid.getEditor().refresh();
+//        });
+
       //  assignmentGrid.setItems(assignments);
         updateAssignmentList();
     }
