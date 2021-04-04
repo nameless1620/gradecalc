@@ -3,6 +3,7 @@ package com.nameless1620.gradecalc.ui;
 import com.nameless1620.gradecalc.ui.views.calculator.CalculatorView;
 import com.nameless1620.gradecalc.ui.views.dashboard.DashboardView;
 import com.nameless1620.gradecalc.ui.views.list.ListView;
+import com.nameless1620.gradecalc.ui.views.resources.ResourcesView;
 import com.nameless1620.gradecalc.ui.views.sandbox.AryaSandboxView;
 import com.nameless1620.gradecalc.ui.views.sandbox.BhoomiSandboxView;
 import com.nameless1620.gradecalc.ui.views.sandbox.IsabellaSandboxView;
@@ -43,6 +44,7 @@ public class MainLayout extends AppLayout {
         addToDrawer(new VerticalLayout(
                 listLink,
                 new RouterLink("Dashboard", DashboardView.class),
+                new RouterLink("Resources", ResourcesView.class),
                 new RouterLink("Calculator", CalculatorView.class),
                 new RouterLink("Arya Sandbox", AryaSandboxView.class),
                 new RouterLink("Joshika Sandbox", JoshikaSandboxView.class),
