@@ -1,5 +1,6 @@
 package com.nameless1620.gradecalc.backend.service;
 
+import com.nameless1620.gradecalc.backend.entity.Assignment;
 import com.nameless1620.gradecalc.backend.entity.Company;
 import com.nameless1620.gradecalc.backend.entity.Contact;
 import com.nameless1620.gradecalc.backend.entity.Course;
@@ -30,7 +31,15 @@ public class CourseService {
         if (courseRepository.count() == 0) {
             courseRepository.saveAll(
                     Stream.of("Calculus", "Physics", "Computer Science")
-                            .map(Course::new)
+                            .map(name -> {
+                                Course course = new Course();
+                                course.setCourseName(name);
+                                course.addAssignments(new Assignment("Test 1", 10, 10));
+                                course.addAssignments(new Assignment("Test 2", 10, 5));
+                                course.addAssignments(new Assignment("Test 3", 10, 0));
+//                                Course::new
+                                return course;
+                            })
                             .collect(Collectors.toList()));
         }
 
