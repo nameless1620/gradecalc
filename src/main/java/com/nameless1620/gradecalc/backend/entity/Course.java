@@ -8,6 +8,7 @@ public class Course extends AbstractEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     private List<Assignment> assignments = new ArrayList<Assignment>();
+   // private List<AssignmentCategory> assignmentCategories = new ArrayList<AssignmentCategory>();
   //  private List<AssignmentCategory> assignments = new ArrayList<Assignment>();
 //    private Map <String, Double> assignmentCategories;
 //    private double weightagePerAssignmentCategory;
@@ -43,6 +44,10 @@ public class Course extends AbstractEntity {
         this.assignments.add(assignment);
         calculateGrade();
     }
+
+//    public void addCategory(AssignmentCategory assignmentCategory) {
+//        this.assignmentCategories.add(assignmentCategory);
+//    }
 
     public double getDesiredGrade() {
         return desiredGrade;

@@ -195,7 +195,7 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void configureAssignmentGrid() {
-        assignmentGrid.setColumns("name", "questions", "wrongQuestions","grade");
+        assignmentGrid.setColumns("name", "category", "questions", "wrongQuestions","grade");
 //        Grid.Column<Assignment> nameColumn = assignmentGrid.addColumn(Assignment::getQuestions)
 //                .setHeader("Name");
 //        Grid.Column<Assignment> questionsColumn = assignmentGrid.addColumn(Assignment::getQuestions)
@@ -230,3 +230,4 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
 }
+
