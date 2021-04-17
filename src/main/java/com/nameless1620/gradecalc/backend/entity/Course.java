@@ -9,8 +9,9 @@ public class Course extends AbstractEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     private List<Assignment> assignments = new ArrayList<Assignment>();
 
-    @OneToMany
-    private List<AssignmentCategory> assignmentCategories = new ArrayList<AssignmentCategory>();
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<AssignmentCategory> assignmentCategories = new HashSet<AssignmentCategory>();
+
   //  private List<AssignmentCategory> assignments = new ArrayList<Assignment>();
 //    private Map <String, Double> assignmentCategories;
 //    private double weightagePerAssignmentCategory;
@@ -50,9 +51,16 @@ public class Course extends AbstractEntity {
     public String[] getAssignmentCategories() {
 //        List<AssignmentCategory> assignments = localCategoryRepository.findAll();
         String[] categoryNames = new String[assignmentCategories.size()];
-        for(int i = 0; i < assignmentCategories.size(); i++) {
-            categoryNames[i] = assignmentCategories.get(i).getCategoryName();
+        int i = 0;
+        Iterator<AssignmentCategory> iterator = assignmentCategories.iterator();
+        while(iterator.hasNext()) {
+            categoryNames[i] = iterator.next().getCategoryName();
+            i++;
         }
+//
+//        for(int i = 0; i < assignmentCategories.size(); i++) {
+//            categoryNames[i] = assignmentCategories.get(i).getCategoryName();
+//        }
         return categoryNames;
     }
 
