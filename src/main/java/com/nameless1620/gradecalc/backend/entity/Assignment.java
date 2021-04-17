@@ -5,17 +5,27 @@ import javax.persistence.Entity;
 @Entity
 public class Assignment extends AbstractEntity {
     private String name;
+    private String category;
     private double questions;
     private double wrongQuestions;
     private double grade;
     private boolean doubleWeighted;
 
-
     public Assignment(){
 
     }
+
     public Assignment(String name, double questions, double wrongQuestions){
         this.name = name;
+        this.category = category;
+        this.questions = questions;
+        this.wrongQuestions = wrongQuestions;
+        this.grade = calculate(questions, wrongQuestions);
+    }
+
+    public Assignment(String name, String category, double questions, double wrongQuestions){
+        this.name = name;
+        this.category = category;
         this.questions = questions;
         this.wrongQuestions = wrongQuestions;
         this.grade = calculate(questions, wrongQuestions);
@@ -51,5 +61,13 @@ public class Assignment extends AbstractEntity {
 
     public double getGrade() {
         return grade;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }
