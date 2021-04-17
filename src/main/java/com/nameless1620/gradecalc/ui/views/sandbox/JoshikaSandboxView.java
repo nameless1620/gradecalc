@@ -5,22 +5,16 @@ import com.nameless1620.gradecalc.backend.entity.Course;
 import com.nameless1620.gradecalc.backend.service.CourseService;
 import com.nameless1620.gradecalc.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
 
 @PageTitle("GradeCalc | Joshika Sandbox")
 @Route(value = "joshikasandbox", layout = MainLayout.class)
@@ -29,8 +23,11 @@ public class JoshikaSandboxView extends VerticalLayout {
     //declare local variables here
     private final CourseService courseService;
     List<Assignment> assignments = new ArrayList<Assignment>();
-    Grid<Assignment> assignmentGrid = new Grid<>(Assignment.class);
+
     Grid<Course> courseGrid = new Grid<>(Course.class);
+    Grid<Assignment> assignmentGrid = new Grid<>(Assignment.class);
+
+    ComboBox<String> category = new ComboBox<>("Category");
 
     //this is the constructor for the class
     public JoshikaSandboxView(CourseService courseService)
@@ -49,6 +46,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         Button addAssignment = new Button("Add Assignment", event -> {
             addAssignment(
                     assignment.getValue(),
+                    category.getValue(),
                     questions.getValue(),
                     wrongQuestions.getValue());
             assignmentGrid.getDataProvider().refreshAll();
@@ -62,7 +60,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         });
 
         //add components to this list to be displayed, order matters!!!
-        add(courseGrid, assignmentGrid, assignment, questions, wrongQuestions, addAssignment, deleteAssignment, updateAssignment);
+        add(courseGrid, assignmentGrid, assignment, category, questions, wrongQuestions, addAssignment, deleteAssignment, updateAssignment);
         updateCourseList();
     }
 
@@ -74,22 +72,17 @@ public class JoshikaSandboxView extends VerticalLayout {
 
 
     private void updateCourseList() {
-
         courseGrid.getDataProvider().refreshAll();
         updateAssignmentList();
-
     }
 
 
     private void updateAssignmentList(){
-
-
         Course selectedCourse = courseGrid.asSingleSelect().getValue();
         if(selectedCourse != null){
             assignmentGrid.setItems(selectedCourse.getAssignments());
+            category.setItems(selectedCourse.getAssignmentCategories());
         }
-        
-
 
     //    Set<Course> courses = courseGrid.getSelectedItems();
 /*
@@ -153,8 +146,8 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     }
 
-    private void addAssignment(String name, String questions, String wrongQuestions) {
-        Assignment assignment = new Assignment(name, Double.parseDouble(questions), Double.parseDouble(wrongQuestions));
+    private void addAssignment(String name, String category, String questions, String wrongQuestions) {
+        Assignment assignment = new Assignment(name, category, Double.parseDouble(questions), Double.parseDouble(wrongQuestions));
         //   assignments.add(assignment);
         Set<Course> courses = courseGrid.getSelectedItems();
         Iterator<Course> iter = courses.iterator();
@@ -178,24 +171,17 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     private void configureCourseGrid() {
         courseGrid.addClassName("course-grid");
-//        courseGrid.setSizeFull();
         courseGrid.removeColumnByKey("assignments");
         courseGrid.setColumns("courseName", "actualGrade", "desiredGrade", "testGradeAverage");
         courseGrid.setItems(courseService.findAll());
-//        courseGrid.addColumn(contact -> {
-//            Company company = contact.getCompany();
-//            return company == null ? "-": company.getName();
-//        }).setHeader("Company");
-
         courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
-
         courseGrid.asSingleSelect().addValueChangeListener(event -> {
             updateAssignmentList();
         });
     }
 
     private void configureAssignmentGrid() {
-        assignmentGrid.setColumns("name", "questions", "wrongQuestions","grade");
+        assignmentGrid.setColumns("name", "category", "questions", "wrongQuestions","grade");
 //        Grid.Column<Assignment> nameColumn = assignmentGrid.addColumn(Assignment::getQuestions)
 //                .setHeader("Name");
 //        Grid.Column<Assignment> questionsColumn = assignmentGrid.addColumn(Assignment::getQuestions)
@@ -230,3 +216,4 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
 }
+

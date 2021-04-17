@@ -31,3 +31,11 @@ public class ResourcesView extends VerticalLayout {
 
     }
 }
+// Link link = new link( "Click Me!,
+//            new ExternalResource("http;//vaadin.com/")
+/*
+This is used to open a URL in a new tab
+
+link.setIcon(new ThemeResource("icons/external-link.png"));
+link.addStyleName("icon-after-caption");
+ */
