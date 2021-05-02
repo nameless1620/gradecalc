@@ -6,6 +6,7 @@ import com.nameless1620.gradecalc.backend.service.CourseService;
 import com.nameless1620.gradecalc.ui.MainLayout;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -64,18 +65,26 @@ public class JoshikaSandboxView extends VerticalLayout {
         updateCourseList();
     }
 
-    //TODO: Add a method to delete an assignment (hint, look at add assignment)
-    //TODO: Add a method to update an assignment (hint, look at add assignment)
-    //TODO: Add a way to categorize an assignment (hint, you will need to update backend.entity.Assignment.java)
-
-
-
-
-    private void updateCourseList() {
-        courseGrid.getDataProvider().refreshAll();
+    private void configureAssignmentGrid() {
+        assignmentGrid.setColumns();
+        Grid.Column<Assignment> assignmentNameColumn = assignmentGrid
+                .addColumn(Assignment::getName).setHeader("Name");
+        Grid.Column<Assignment> assignmentCategoryColumn = assignmentGrid
+                .addColumn(Assignment::getCategory).setHeader("Category");
+        Grid.Column<Assignment> assignmentQuestionsColumn = assignmentGrid
+                .addColumn(Assignment::getQuestions).setHeader("Questions");
+        Grid.Column<Assignment> assignmentWrongQuestionsColumn = assignmentGrid
+                .addColumn(Assignment::getWrongQuestions).setHeader("Errors");
+        Grid.Column<Assignment> assignmentGradeColumn = assignmentGrid
+                .addColumn(Assignment::getGrade).setHeader("Grade");
+        Button addAssignmentButton = new Button("Add Assignment", event -> {
+            addAssignment("New Assignment", "Math", "0", "0");
+        });
+        FooterRow footerRow = assignmentGrid.appendFooterRow();
+        footerRow.getCell(assignmentNameColumn).setComponent(addAssignmentButton);
+        add(addAssignmentButton);
         updateAssignmentList();
     }
-
 
     private void updateAssignmentList(){
         Course selectedCourse = courseGrid.asSingleSelect().getValue();
@@ -83,67 +92,6 @@ public class JoshikaSandboxView extends VerticalLayout {
             assignmentGrid.setItems(selectedCourse.getAssignments());
             category.setItems(selectedCourse.getAssignmentCategories());
         }
-
-    //    Set<Course> courses = courseGrid.getSelectedItems();
-/*
-        PersonService personService = new PersonService();
-        List<Person> personList = personService.fetchAll();
-
-        H3 firstHeader = new H3("Grid with single select");
-        Grid<Person> firstGrid = new Grid<>();
-        firstGrid.setItems(personList);
-
-        H3 secondHeader = new H3("Grid with multi select");
-        Grid<Person> secondGrid = new Grid<>();
-        secondGrid.setItems(personList);
-        secondGrid.setSelectionMode(SelectionMode.MULTI);
-
-        TextField filterField = new TextField();
-        filterField.setValueChangeMode(ValueChangeMode.EAGER);
-        filterField.addValueChangeListener(event -> {
-            Optional<Person> foundPerson = personList.stream()
-                    .filter(person -> person.getFirstName().toLowerCase()
-                            .startsWith(event.getValue().toLowerCase()))
-                    .findFirst();
-
-            firstGrid.asSingleSelect().setValue(foundPerson.orElse(null));
-
-            secondGrid.getSelectionModel().deselectAll();
-            Set<Person> foundpersons = personList.stream()
-                    .filter(person -> person.getFirstName().toLowerCase()
-                            .startsWith(event.getValue().toLowerCase()))
-                    .collect(Collectors.toSet());
-            secondGrid.asMultiSelect().setValue(foundpersons);
-        });
-
-        firstGrid.addColumn(Person::getFirstName).setHeader("First Name");
-        firstGrid.addColumn(Person::getAge).setHeader("Age");
-
-        secondGrid.addColumn(Person::getFirstName).setHeader("First Name");
-        secondGrid.addColumn(Person::getAge).setHeader("Age");
-
-        NativeButton deselectBtn = new NativeButton("Deselect all");
-        deselectBtn.addClickListener(
-                event -> secondGrid.asMultiSelect().deselectAll());
-        NativeButton selectAllBtn = new NativeButton("Select all");
-        selectAllBtn.addClickListener(
-                event -> ((GridMultiSelectionModel<Person>) secondGrid
-                        .getSelectionModel()).selectAll());
-        add(filterField, firstHeader, firstGrid, secondHeader, secondGrid,
-                selectAllBtn, deselectBtn);
-
-        /*
-
-
-
-        if(courses.size() > 0){
-            Iterator<Course> iter = courses.iterator();
-            Course selectedCourse = iter.next();
-            assignmentGrid.setItems(selectedCourse.getAssignments());
-        }
-         */
-
-
     }
 
     private void addAssignment(String name, String category, String questions, String wrongQuestions) {
@@ -155,6 +103,11 @@ public class JoshikaSandboxView extends VerticalLayout {
         selectedCourse.addAssignments(assignment);
         updateCourseList();
     }
+
+    private void updateAssignment(){
+
+    }
+
     private void deleteAssignment(){
 
         Set<Assignment> edit = assignmentGrid.getSelectedItems();
@@ -163,11 +116,6 @@ public class JoshikaSandboxView extends VerticalLayout {
             assignments.remove(selected);
         }
     }
-
-    private void updateAssignment(){
-
-    }
-
 
     private void configureCourseGrid() {
         courseGrid.addClassName("course-grid");
@@ -180,38 +128,8 @@ public class JoshikaSandboxView extends VerticalLayout {
         });
     }
 
-    private void configureAssignmentGrid() {
-        assignmentGrid.setColumns("name", "category", "questions", "wrongQuestions","grade");
-//        Grid.Column<Assignment> nameColumn = assignmentGrid.addColumn(Assignment::getQuestions)
-//                .setHeader("Name");
-//        Grid.Column<Assignment> questionsColumn = assignmentGrid.addColumn(Assignment::getQuestions)
-//                .setHeader("Questions");
-//        Grid.Column<Assignment> wrongQuestionsColumn = assignmentGrid.addColumn(Assignment::getQuestions)
-//                .setHeader("Wrong Questions");
-//        Binder<Assignment> binder = new Binder<>(Assignment.class);
-//        assignmentGrid.getEditor().setBinder(binder);
-//
-//        TextField assignmentNameField = new TextField();
-//        TextField assignmentQuestionsField = new TextField();
-//        TextField assignmentWrongQuestionsField = new TextField();
-//
-//        assignmentNameField.getElement()
-//                .addEventListener("keydown",
-//                        event -> assignmentGrid.getEditor().cancel())
-//                .setFilter("event.key === 'Tab' && event.shiftKey");
-//        binder.bind(assignmentNameField, "name");
-//        nameColumn.setEditorComponent(assignmentNameField);
-//
-//        assignmentGrid.addItemDoubleClickListener(event -> {
-//            assignmentGrid.getEditor().editItem(event.getItem());
-//            assignmentNameField.focus();
-//        });
-//
-//        binder.addValueChangeListener(event -> {
-//            assignmentGrid.getEditor().refresh();
-//        });
-
-      //  assignmentGrid.setItems(assignments);
+    private void updateCourseList() {
+        courseGrid.getDataProvider().refreshAll();
         updateAssignmentList();
     }
 
