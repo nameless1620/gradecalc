@@ -4,12 +4,16 @@ import com.nameless1620.gradecalc.backend.entity.Assignment;
 import com.nameless1620.gradecalc.backend.entity.Course;
 import com.nameless1620.gradecalc.backend.service.CourseService;
 import com.nameless1620.gradecalc.ui.MainLayout;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.converter.StringToDoubleConverter;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import java.util.ArrayList;
@@ -77,12 +81,64 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addColumn(Assignment::getWrongQuestions).setHeader("Errors");
         Grid.Column<Assignment> assignmentGradeColumn = assignmentGrid
                 .addColumn(Assignment::getGrade).setHeader("Grade");
+
         Button addAssignmentButton = new Button("Add Assignment", event -> {
             addAssignment("New Assignment", "Math", "0", "0");
         });
+        Text assignmentInstructions = new Text("HINT: Double click a cell to edit");
+
+        Binder<Assignment> binder = new Binder<>(Assignment.class);
+        assignmentGrid.getEditor().setBinder(binder);
+
+        TextField assignmentNameField = new TextField();
+        // Close the editor in case of backward between components
+        assignmentNameField.getElement()
+                .addEventListener("keydown",
+                        event -> assignmentGrid.getEditor().cancel())
+                .setFilter("event.key === 'Tab' && event.shiftKey");
+        binder.forField(assignmentNameField)
+                .bind("name");
+        assignmentNameColumn.setEditorComponent(assignmentNameField);
+
+        TextField assignmentQuestionsField = new TextField();
+        // Close the editor in case of backward between components
+        assignmentQuestionsField.getElement()
+                .addEventListener("keydown",
+                        event -> assignmentGrid.getEditor().cancel())
+                .setFilter("event.key === 'Tab' && event.shiftKey");
+        binder.forField(assignmentQuestionsField)
+                .withConverter(
+                        new StringToDoubleConverter("Questions must be a number"))
+                .bind("questions");
+        assignmentQuestionsColumn.setEditorComponent(assignmentQuestionsField);
+
+        TextField assignmentErrorsField = new TextField();
+        // Close the editor in case of backward between components
+        assignmentErrorsField.getElement()
+                .addEventListener("keydown",
+                        event -> assignmentGrid.getEditor().cancel())
+                .setFilter("event.key === 'Tab' && event.shiftKey");
+        binder.forField(assignmentErrorsField)
+                .withConverter(
+                        new StringToDoubleConverter("Errors must be a number"))
+                .bind("wrongQuestions");
+        assignmentWrongQuestionsColumn.setEditorComponent(assignmentErrorsField);
+
+        assignmentGrid.addItemDoubleClickListener(event -> {
+            assignmentGrid.getEditor().editItem(event.getItem());
+            assignmentNameField.focus();
+        });
+
+//        assignmentGrid.getEditor().addCloseListener(event -> {
+//            if (binder.getBean() != null) {
+//                message.setText(binder.getBean().getName());
+//            }
+//        });
+
         FooterRow footerRow = assignmentGrid.appendFooterRow();
         footerRow.getCell(assignmentNameColumn).setComponent(addAssignmentButton);
-        add(addAssignmentButton);
+        footerRow.getCell(assignmentCategoryColumn).setComponent(assignmentInstructions);
+        add(addAssignmentButton, assignmentInstructions);
         updateAssignmentList();
     }
 
