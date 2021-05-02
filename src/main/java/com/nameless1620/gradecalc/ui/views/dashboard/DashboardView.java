@@ -3,8 +3,6 @@ package com.nameless1620.gradecalc.ui.views.dashboard;
 import com.nameless1620.gradecalc.backend.service.CompanyService;
 import com.nameless1620.gradecalc.backend.service.ContactService;
 import com.nameless1620.gradecalc.ui.MainLayout;
-import com.vaadin.flow.component.Component;
-
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;

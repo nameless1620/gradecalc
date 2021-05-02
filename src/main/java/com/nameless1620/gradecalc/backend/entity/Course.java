@@ -7,10 +7,12 @@ import java.util.*;
 public class Course extends AbstractEntity {
 
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
-    private List<Assignment> assignments = new ArrayList<Assignment>();
+    private List<Assignment> assignments = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER)
-    private Set<AssignmentCategory> assignmentCategories = new HashSet<AssignmentCategory>();
+    private Set<AssignmentCategory> assignmentCategories = new HashSet<>();
+    //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl
+    //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl/51055523?stw=2#51055523
 
   //  private List<AssignmentCategory> assignments = new ArrayList<Assignment>();
 //    private Map <String, Double> assignmentCategories;
