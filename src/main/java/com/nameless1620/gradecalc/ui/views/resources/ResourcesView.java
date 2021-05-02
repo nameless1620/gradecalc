@@ -8,7 +8,6 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import sun.awt.image.ImageWatched;
 
 @PageTitle("GradeCalc | Resources")
 @Route(value = "resources", layout = MainLayout.class)
