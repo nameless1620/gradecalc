@@ -50,6 +50,11 @@ public class Course extends AbstractEntity {
         calculateGrade();
     }
 
+    public void removeAssignment(Assignment assignment) {
+        this.assignments.remove(assignment);
+        calculateGrade();
+    }
+
     public String[] getAssignmentCategories() {
 //        List<AssignmentCategory> assignments = localCategoryRepository.findAll();
         String[] categoryNames = new String[assignmentCategories.size()];

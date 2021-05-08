@@ -55,7 +55,6 @@ public class Assignment extends AbstractEntity {
         this.wrongQuestions = wrongQuestions;
     }
     private double calculate (double questions, double wrongQuestions) {
-
         return (questions - wrongQuestions) / questions;
     }
 

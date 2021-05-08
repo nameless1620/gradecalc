@@ -27,7 +27,7 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     //declare local variables here
     private final CourseService courseService;
-    List<Assignment> assignments = new ArrayList<Assignment>();
+//    List<Assignment> assignments = new ArrayList<Assignment>(); DEPRECATED
 
     Grid<Course> courseGrid = new Grid<>(Course.class);
     Grid<Assignment> assignmentGrid = new Grid<>(Assignment.class);
@@ -44,28 +44,8 @@ public class JoshikaSandboxView extends VerticalLayout {
         configureCourseGrid();
         configureAssignmentGrid();
 
-        //entry fields for assignments
-        TextField assignment = new TextField("Assignment","Ex: Test 1");
-        TextField questions = new TextField("Number of Questions", "Ex: 35");
-        TextField wrongQuestions = new TextField("Number of Wrong Questions","Ex: 4");
-        Button addAssignment = new Button("Add Assignment", event -> {
-            addAssignment(
-                    assignment.getValue(),
-                    category.getValue(),
-                    questions.getValue(),
-                    wrongQuestions.getValue());
-            assignmentGrid.getDataProvider().refreshAll();
-        });
-        Button deleteAssignment = new Button("Remove Assignment", buttonClickEvent -> {
-            deleteAssignment();
-            assignmentGrid.getDataProvider().refreshAll();
-        });
-        Button updateAssignment = new Button("Edit Assignment", buttonClickEvent -> {
-            updateAssignment();
-        });
-
         //add components to this list to be displayed, order matters!!!
-        add(courseGrid, assignmentGrid, assignment, category, questions, wrongQuestions, addAssignment, deleteAssignment, updateAssignment);
+        add(courseGrid, assignmentGrid);
         updateCourseList();
     }
 
@@ -84,6 +64,9 @@ public class JoshikaSandboxView extends VerticalLayout {
 
         Button addAssignmentButton = new Button("Add Assignment", event -> {
             addAssignment("New Assignment", "Math", "0", "0");
+        });
+        Button removeAssignmentButton = new Button("Remove Selected Assignment", event -> {
+            removeAssignment();
         });
         Text assignmentInstructions = new Text("HINT: Double click a cell to edit");
 
@@ -114,6 +97,9 @@ public class JoshikaSandboxView extends VerticalLayout {
 
         TextField assignmentErrorsField = new TextField();
         // Close the editor in case of backward between components
+//        assignmentErrorsField.getElement()
+//                .addEventListener("close"),
+//                    event -> assignmentGrid.
         assignmentErrorsField.getElement()
                 .addEventListener("keydown",
                         event -> assignmentGrid.getEditor().cancel())
@@ -129,6 +115,13 @@ public class JoshikaSandboxView extends VerticalLayout {
             assignmentNameField.focus();
         });
 
+        //TODO: Figure out how to update assignment grid items on close
+//        assignmentGrid.getEditor().addCloseListener(event -> {
+//            if (binder.getBean() != null) {
+//                updateAssignment(assignmentGrid.asSingleSelect().getValue());
+//            }
+//        });
+
 //        assignmentGrid.getEditor().addCloseListener(event -> {
 //            if (binder.getBean() != null) {
 //                message.setText(binder.getBean().getName());
@@ -137,8 +130,9 @@ public class JoshikaSandboxView extends VerticalLayout {
 
         FooterRow footerRow = assignmentGrid.appendFooterRow();
         footerRow.getCell(assignmentNameColumn).setComponent(addAssignmentButton);
-        footerRow.getCell(assignmentCategoryColumn).setComponent(assignmentInstructions);
-        add(addAssignmentButton, assignmentInstructions);
+        footerRow.getCell(assignmentCategoryColumn).setComponent(removeAssignmentButton);
+        footerRow.getCell(assignmentQuestionsColumn).setComponent(assignmentInstructions);
+        add(addAssignmentButton, removeAssignmentButton, assignmentInstructions);
         updateAssignmentList();
     }
 
@@ -151,26 +145,19 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void addAssignment(String name, String category, String questions, String wrongQuestions) {
-        Assignment assignment = new Assignment(name, category, Double.parseDouble(questions), Double.parseDouble(wrongQuestions));
-        //   assignments.add(assignment);
-        Set<Course> courses = courseGrid.getSelectedItems();
-        Iterator<Course> iter = courses.iterator();
-        Course selectedCourse = iter.next();
-        selectedCourse.addAssignments(assignment);
-        updateCourseList();
+        courseGrid.asSingleSelect().getValue().addAssignments(
+                new Assignment(name, category, Double.parseDouble(questions), Double.parseDouble(wrongQuestions))
+        );
+        assignmentGrid.getDataProvider().refreshAll();
     }
 
-    private void updateAssignment(){
+    private void updateAssignment(Assignment assignment){
 
     }
 
-    private void deleteAssignment(){
-
-        Set<Assignment> edit = assignmentGrid.getSelectedItems();
-        for(Iterator<Assignment> assignmentIterator = edit.iterator(); assignmentIterator.hasNext(); ){
-            Assignment selected = assignmentIterator.next();
-            assignments.remove(selected);
-        }
+    private void removeAssignment(){
+        courseGrid.asSingleSelect().getValue().removeAssignment(assignmentGrid.asSingleSelect().getValue());
+        assignmentGrid.getDataProvider().refreshAll();
     }
 
     private void configureCourseGrid() {
@@ -185,9 +172,9 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void updateCourseList() {
+        //TODO: stop using this for refresh
         courseGrid.getDataProvider().refreshAll();
         updateAssignmentList();
     }
-
 }
 
