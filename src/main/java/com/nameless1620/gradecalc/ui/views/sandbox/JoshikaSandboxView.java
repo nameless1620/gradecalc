@@ -16,6 +16,8 @@ import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.springframework.expression.spel.ast.Assign;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -56,7 +58,8 @@ public class JoshikaSandboxView extends VerticalLayout {
         Grid.Column<Assignment> assignmentCategoryColumn = assignmentGrid
                 .addColumn(Assignment::getCategory).setHeader("Category");
         Grid.Column<Assignment> assignmentQuestionsColumn = assignmentGrid
-                .addColumn(Assignment::getQuestions).setHeader("Questions");
+                .addColumn(Assignment::getQuestions)
+                .setHeader("Questions");
         Grid.Column<Assignment> assignmentWrongQuestionsColumn = assignmentGrid
                 .addColumn(Assignment::getWrongQuestions).setHeader("Errors");
         Grid.Column<Assignment> assignmentGradeColumn = assignmentGrid
@@ -80,7 +83,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                         event -> assignmentGrid.getEditor().cancel())
                 .setFilter("event.key === 'Tab' && event.shiftKey");
         binder.forField(assignmentNameField)
-                .bind("name");
+            .bind(Assignment::getName, Assignment::setName);
         assignmentNameColumn.setEditorComponent(assignmentNameField);
 
         TextField assignmentQuestionsField = new TextField();
@@ -92,7 +95,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         binder.forField(assignmentQuestionsField)
                 .withConverter(
                         new StringToDoubleConverter("Questions must be a number"))
-                .bind("questions");
+                .bind(Assignment::getQuestions, Assignment::setQuestions);
         assignmentQuestionsColumn.setEditorComponent(assignmentQuestionsField);
 
         TextField assignmentErrorsField = new TextField();
@@ -107,26 +110,13 @@ public class JoshikaSandboxView extends VerticalLayout {
         binder.forField(assignmentErrorsField)
                 .withConverter(
                         new StringToDoubleConverter("Errors must be a number"))
-                .bind("wrongQuestions");
+                .bind(Assignment::getWrongQuestions, Assignment::setWrongQuestions);
         assignmentWrongQuestionsColumn.setEditorComponent(assignmentErrorsField);
 
         assignmentGrid.addItemDoubleClickListener(event -> {
             assignmentGrid.getEditor().editItem(event.getItem());
             assignmentNameField.focus();
         });
-
-        //TODO: Figure out how to update assignment grid items on close
-//        assignmentGrid.getEditor().addCloseListener(event -> {
-//            if (binder.getBean() != null) {
-//                updateAssignment(assignmentGrid.asSingleSelect().getValue());
-//            }
-//        });
-
-//        assignmentGrid.getEditor().addCloseListener(event -> {
-//            if (binder.getBean() != null) {
-//                message.setText(binder.getBean().getName());
-//            }
-//        });
 
         FooterRow footerRow = assignmentGrid.appendFooterRow();
         footerRow.getCell(assignmentNameColumn).setComponent(addAssignmentButton);

@@ -20,7 +20,7 @@ public class Assignment extends AbstractEntity {
         this.category = category;
         this.questions = questions;
         this.wrongQuestions = wrongQuestions;
-        this.grade = calculate(questions, wrongQuestions);
+        calculate();
     }
 
     public Assignment(String name, String category, double questions, double wrongQuestions){
@@ -28,7 +28,7 @@ public class Assignment extends AbstractEntity {
         this.category = category;
         this.questions = questions;
         this.wrongQuestions = wrongQuestions;
-        this.grade = calculate(questions, wrongQuestions);
+        calculate();
     }
 
     public String getName(){
@@ -45,6 +45,7 @@ public class Assignment extends AbstractEntity {
 
     public void setQuestions(double questions) {
         this.questions = questions;
+        calculate();
     }
 
     public double getWrongQuestions() {
@@ -53,9 +54,11 @@ public class Assignment extends AbstractEntity {
 
     public void setWrongQuestions(double wrongQuestions) {
         this.wrongQuestions = wrongQuestions;
+        calculate();
     }
-    private double calculate (double questions, double wrongQuestions) {
-        return (questions - wrongQuestions) / questions;
+
+    private void calculate () {
+        this.grade = (this.questions - this.wrongQuestions) / this.questions;
     }
 
     public double getGrade() {
