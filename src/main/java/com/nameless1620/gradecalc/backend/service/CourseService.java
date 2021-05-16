@@ -1,9 +1,6 @@
 package com.nameless1620.gradecalc.backend.service;
 
-import com.nameless1620.gradecalc.backend.entity.Assignment;
-import com.nameless1620.gradecalc.backend.entity.Company;
-import com.nameless1620.gradecalc.backend.entity.Contact;
-import com.nameless1620.gradecalc.backend.entity.Course;
+import com.nameless1620.gradecalc.backend.entity.*;
 import com.nameless1620.gradecalc.backend.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,11 +34,16 @@ public class CourseService {
                                 course.addAssignments(new Assignment("Test 1", 10, 10));
                                 course.addAssignments(new Assignment("Test 2", 10, 5));
                                 course.addAssignments(new Assignment("Test 3", 10, 0));
+                                course.addAssignmentCategory(new AssignmentCategory("Test", 20,5,89));
+                                course.addAssignmentCategory(new AssignmentCategory("Quiz", 25,6,89));
+                                course.addAssignmentCategory(new AssignmentCategory("Homework/Classwork", 5,5,89));
+                                course.addAssignmentCategory(new AssignmentCategory("Labs", 50,5,80));
 //                                Course::new
                                 return course;
                             })
                             .collect(Collectors.toList()));
         }
+
 
 //        if (courseRepository.count() == 0) {
 //            Random r = new Random(0);

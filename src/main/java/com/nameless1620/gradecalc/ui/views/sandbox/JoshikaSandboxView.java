@@ -1,7 +1,9 @@
 package com.nameless1620.gradecalc.ui.views.sandbox;
 
 import com.nameless1620.gradecalc.backend.entity.Assignment;
+import com.nameless1620.gradecalc.backend.entity.AssignmentCategory;
 import com.nameless1620.gradecalc.backend.entity.Course;
+import com.nameless1620.gradecalc.backend.service.CategoryService;
 import com.nameless1620.gradecalc.backend.service.CourseService;
 import com.nameless1620.gradecalc.ui.MainLayout;
 import com.vaadin.flow.component.Text;
@@ -31,6 +33,7 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     Grid<Course> courseGrid = new Grid<>(Course.class);
     Grid<Assignment> assignmentGrid = new Grid<>(Assignment.class);
+    Grid<AssignmentCategory> categoryGrid = new Grid<>(AssignmentCategory.class);
 
     ComboBox<String> category = new ComboBox<>("Category");
 
@@ -43,12 +46,27 @@ public class JoshikaSandboxView extends VerticalLayout {
         this.courseService = courseService;
         configureCourseGrid();
         configureAssignmentGrid();
+        configureCategoryGrid();
 
         //add components to this list to be displayed, order matters!!!
-        add(courseGrid, assignmentGrid);
+        add(courseGrid, categoryGrid, assignmentGrid);
         updateCourseList();
     }
 
+    private void configureCategoryGrid(){
+        categoryGrid.setColumns();
+        Grid.Column<AssignmentCategory> assignmentNameColumn = categoryGrid
+                .addColumn(AssignmentCategory::getCategoryName).setHeader("Category");
+        Grid.Column<AssignmentCategory> assignmentCategoryColumn = categoryGrid
+                .addColumn(AssignmentCategory::getNumberOfAssignments).setHeader("Number of Assignments");
+        Grid.Column<AssignmentCategory> assignmentAverageColumn = categoryGrid
+                .addColumn(AssignmentCategory::getCategoryAverage).setHeader("Average");
+        categoryGrid.asSingleSelect().addValueChangeListener(event -> {
+            updateAssignmentList();
+        });
+
+
+    }
     private void configureAssignmentGrid() {
         assignmentGrid.setColumns();
         Grid.Column<Assignment> assignmentNameColumn = assignmentGrid
@@ -140,7 +158,15 @@ public class JoshikaSandboxView extends VerticalLayout {
         Course selectedCourse = courseGrid.asSingleSelect().getValue();
         if(selectedCourse != null){
             assignmentGrid.setItems(selectedCourse.getAssignments());
-            category.setItems(selectedCourse.getAssignmentCategories());
+ //           category.setItems(selectedCourse.getAssignmentCategories());
+        }
+    }
+
+    private void updateCategoryList(){
+        Course selectedCourse = courseGrid.asSingleSelect().getValue();
+        if(selectedCourse != null){
+            categoryGrid.setItems(selectedCourse.getAssignmentCategories());
+//            category.setItems(selectedCourse.getAssignmentCategories());
         }
     }
 
@@ -167,7 +193,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         courseGrid.setItems(courseService.findAll());
         courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
         courseGrid.asSingleSelect().addValueChangeListener(event -> {
-            updateAssignmentList();
+            updateCategoryList();
         });
     }
 
