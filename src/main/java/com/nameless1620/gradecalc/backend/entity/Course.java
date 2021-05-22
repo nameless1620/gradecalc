@@ -9,7 +9,7 @@ public class Course extends AbstractEntity {
     @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     private List<Assignment> assignments = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<AssignmentCategory> assignmentCategories = new HashSet<>();
     //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl
     //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl/51055523?stw=2#51055523
@@ -55,20 +55,23 @@ public class Course extends AbstractEntity {
         calculateGrade();
     }
 
-    public String[] getAssignmentCategories() {
+    public Set<AssignmentCategory> getAssignmentCategories(){
 //        List<AssignmentCategory> assignments = localCategoryRepository.findAll();
-        String[] categoryNames = new String[assignmentCategories.size()];
-        int i = 0;
-        Iterator<AssignmentCategory> iterator = assignmentCategories.iterator();
-        while(iterator.hasNext()) {
-            categoryNames[i] = iterator.next().getCategoryName();
-            i++;
-        }
+//        String[] categoryNames = new String[assignmentCategories.size()];
+//        int i = 0;
+//        Iterator<AssignmentCategory> iterator = assignmentCategories.iterator();
+//        while(iterator.hasNext()) {
+//            categoryNames[i] = iterator.next().getCategoryName();
+//            i++;
+//        }
 //
 //        for(int i = 0; i < assignmentCategories.size(); i++) {
 //            categoryNames[i] = assignmentCategories.get(i).getCategoryName();
 //        }
-        return categoryNames;
+        return assignmentCategories;
+    }
+    public void addAssignmentCategory(AssignmentCategory assignmentCategory) {
+        this.assignmentCategories.add(assignmentCategory);
     }
 
     public double getDesiredGrade() {

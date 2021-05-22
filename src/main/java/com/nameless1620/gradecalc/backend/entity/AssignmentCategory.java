@@ -6,14 +6,18 @@ import javax.persistence.Entity;
 public class AssignmentCategory extends AbstractEntity {
     private String categoryName;
     private double categoryWeight;
+    private int numberOfAssignments;
+    private double categoryAverage;
 
     public AssignmentCategory (){
 
     }
 
-    public AssignmentCategory (String categoryName, double categoryWeight) {
+    public AssignmentCategory (String categoryName, double categoryWeight, int numberOfAssignments, double categoryAverage) {
         this.categoryName = categoryName;
         this.categoryWeight = categoryWeight;
+        this.numberOfAssignments = numberOfAssignments;
+        this.categoryAverage = categoryAverage;
     }
 
     public String getCategoryName() {return categoryName;}
@@ -24,8 +28,16 @@ public class AssignmentCategory extends AbstractEntity {
         return categoryWeight;
     }
 
+    public int getNumberOfAssignments() { return numberOfAssignments;}
+
+    public void setNumberOfAssignments(int numberOfAssignments) {this.categoryWeight = numberOfAssignments;}
+
     public void setCategoryWeight(double categoryWeight) {
         this.categoryWeight = categoryWeight;
     }
+
+    public double getCategoryAverage() { return categoryAverage;}
+
+    public void setCategoryAverage( double categoryAverage) {this.categoryAverage= categoryAverage;}
 }
 

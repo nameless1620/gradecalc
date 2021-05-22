@@ -26,7 +26,9 @@ public class CategoryService {
             localCategoryRepository.saveAll(
                     Stream.of("Test", "Quiz", "Home/Classwork", "Project", "Labs")
                         .map(name -> {
-                          AssignmentCategory assignmentCategory = new AssignmentCategory(name,20);
+
+
+                            AssignmentCategory assignmentCategory = new AssignmentCategory(name,20, 5, 89);
                           return assignmentCategory;
                         })
                     .collect(Collectors.toList()));
