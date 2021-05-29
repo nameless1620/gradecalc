@@ -1,11 +1,16 @@
 package com.nameless1620.gradecalc.backend.entity;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 @Entity
 public class Assignment extends AbstractEntity {
     private String name;
-    private String category;
+
+    @ManyToOne
+    private AssignmentCategory category;
     private double questions;
     private double wrongQuestions;
     private double grade;
@@ -17,13 +22,12 @@ public class Assignment extends AbstractEntity {
 
     public Assignment(String name, double questions, double wrongQuestions){
         this.name = name;
-        this.category = category;
         this.questions = questions;
         this.wrongQuestions = wrongQuestions;
         calculate();
     }
 
-    public Assignment(String name, String category, double questions, double wrongQuestions){
+    public Assignment(String name, AssignmentCategory category, double questions, double wrongQuestions){
         this.name = name;
         this.category = category;
         this.questions = questions;
@@ -65,11 +69,25 @@ public class Assignment extends AbstractEntity {
         return grade;
     }
 
-    public String getCategory() {
-        return category;
+    public AssignmentCategory getCategory() {
+        return this.category;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public String getCategoryName() {
+        if (category == null) {
+            return "None";
+        }
+        return category.getCategoryName();
     }
+
+    public void setCategory(AssignmentCategory category) {
+        if (category != null) //TODO Find what is trying to set this to null :)
+            this.category = category;
+    }
+
+//    public void setCategory(String category) {
+//        //this.category = category;
+//        //TODO: Lookup category by name
+//
+//    }
 }

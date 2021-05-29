@@ -2,6 +2,7 @@ package com.nameless1620.gradecalc.backend.entity;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 public class Course extends AbstractEntity {
@@ -72,6 +73,12 @@ public class Course extends AbstractEntity {
     }
     public void addAssignmentCategory(AssignmentCategory assignmentCategory) {
         this.assignmentCategories.add(assignmentCategory);
+    }
+
+    public List<String> getAssignmentCategoryNames() {
+        return assignmentCategories.stream()
+                .map(x -> x.getCategoryName())
+                .collect(Collectors.toList());
     }
 
     public double getDesiredGrade() {
