@@ -11,9 +11,9 @@ public class Assignment extends AbstractEntity {
 
     @ManyToOne
     private AssignmentCategory category;
-    private double questions;
-    private double wrongQuestions;
-    private double grade;
+    private double questions = 0;
+    private double wrongQuestions = 0;
+    private double grade = 0;
     private boolean doubleWeighted;
 
     public Assignment(){
@@ -62,7 +62,10 @@ public class Assignment extends AbstractEntity {
     }
 
     private void calculate () {
-        this.grade = (this.questions - this.wrongQuestions) / this.questions;
+        if (this.questions == 0)
+            this.grade = 0;
+        else
+            this.grade = (this.questions - this.wrongQuestions) / this.questions;
     }
 
     public double getGrade() {

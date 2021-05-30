@@ -53,7 +53,7 @@ public class JoshikaSandboxView extends VerticalLayout {
     private void configureCourseGrid() {
         courseGrid.addClassName("course-grid");
         courseGrid.removeColumnByKey("assignments");
-        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade", "testGradeAverage");
+        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade", "assignedWeight");
         courseGrid.setItems(courseService.findAll());
         courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
         courseGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
@@ -242,15 +242,21 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void addAssignment() {
-        if (currentCategory() != null)
+        if (lastSelectedAssignmentCategory != null)
             currentCourse().addAssignments(new Assignment("New Assignment", currentCategory(), 0, 0));
         else
             currentCourse().addAssignments(new Assignment("New Assignment", 0, 0));
-        assignmentGrid.getDataProvider().refreshAll();
+        fullGridRefresh();
     }
 
     private void removeAssignment(){
         currentCourse().removeAssignment(assignmentGrid.asSingleSelect().getValue());
+        fullGridRefresh();
+    }
+
+    private void fullGridRefresh() {
+        courseGrid.getDataProvider().refreshAll();
+        categoryGrid.getDataProvider().refreshAll();
         assignmentGrid.getDataProvider().refreshAll();
     }
 }

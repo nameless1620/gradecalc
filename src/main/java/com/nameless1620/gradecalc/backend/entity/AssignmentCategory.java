@@ -30,7 +30,7 @@ public class AssignmentCategory extends AbstractEntity {
 
     public int getNumberOfAssignments() { return numberOfAssignments;}
 
-    public void setNumberOfAssignments(int numberOfAssignments) {this.categoryWeight = numberOfAssignments;}
+    public void setNumberOfAssignments(int numberOfAssignments) {this.numberOfAssignments = numberOfAssignments;}
 
     public void setCategoryWeight(double categoryWeight) {
         this.categoryWeight = categoryWeight;
@@ -38,7 +38,7 @@ public class AssignmentCategory extends AbstractEntity {
 
     public double getCategoryAverage() { return categoryAverage;}
 
-    public void setCategoryAverage( double categoryAverage) {this.categoryAverage= categoryAverage;}
+    public void setCategoryAverage( double categoryAverage) {this.categoryAverage = categoryAverage;}
 
     public double getWeightedAverage() {
         return categoryAverage * categoryWeight;

@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 @Entity
 public class Course extends AbstractEntity {
 
-    @OneToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Assignment> assignments = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -18,24 +18,16 @@ public class Course extends AbstractEntity {
     //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl
     //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl/51055523?stw=2#51055523
 
-  //  private List<AssignmentCategory> assignments = new ArrayList<Assignment>();
-//    private Map <String, Double> assignmentCategories;
-//    private double weightagePerAssignmentCategory;
-
     private String courseName;
     private double actualGrade = 0;
     private double desiredGrade = 0;
-    private double testGradeAverage = 0;
-    private double testCategoryWeight = 0;
-    private double testCategoryPoints;
+    private double assignedWeight = 0.0;
 
-    public Course (){
-        calculateGrades();
+    public Course() {
     }
 
-    public Course (String name) {
+    public Course(String name) {
         this.courseName = name;
-        calculateGrades();
     }
 
     public String getCourseName() {
@@ -60,7 +52,7 @@ public class Course extends AbstractEntity {
         calculateGrades();
     }
 
-    public Set<AssignmentCategory> getAssignmentCategories(){
+    public Set<AssignmentCategory> getAssignmentCategories() {
         return assignmentCategories;
     }
 
@@ -73,16 +65,37 @@ public class Course extends AbstractEntity {
         calculateGrades();
     }
 
-    private void calculateGrades() {
-        assignmentCategories.stream().map(e -> {
+    public void calculateGrades() {
+        //TODO: Eliminate need to call this explicitly when assignment/category fields are updated
+        assignedWeight = 0;
+
+        assignmentCategories.stream().forEach(e -> {
             Set<Assignment> filteredAssignments = getAssignmentsByCategory(e);
-            e.setNumberOfAssignments(filteredAssignments.size());
-            double totalAverage = filteredAssignments.stream().map(Assignment::getGrade).reduce(0.0, Double::sum);
-            e.setCategoryAverage(totalAverage / filteredAssignments.size());
-            return e;
+            if (filteredAssignments.size() == 0) {
+                e.setNumberOfAssignments(0);
+                e.setCategoryAverage(0);
+            }
+            else {
+                e.setNumberOfAssignments(filteredAssignments.size());
+                double totalAverage = filteredAssignments.stream().map(Assignment::getGrade).reduce(0.0, Double::sum);
+                //TODO: Refactor safe divide
+                e.setCategoryAverage(totalAverage / filteredAssignments.size());
+            }
+            assignedWeight += e.getCategoryWeight();
         });
 
-        actualGrade = assignmentCategories.stream().map(AssignmentCategory::getWeightedAverage).reduce(0.0, Double::sum) / 100;
+        //Handle unassigned category
+        double unassignedAverage = 0;
+        double unassignedWeightedAverage = 0;
+        Set<Assignment> unassignedAssignments = getAssignmentsByCategory(null);
+        if (unassignedAssignments.size() != 0) {
+            unassignedAverage = unassignedAssignments.stream().map(Assignment::getGrade).reduce(0.0, Double::sum);
+            unassignedWeightedAverage = (unassignedAverage / unassignedAssignments.size()) * (100 - assignedWeight);
+        }
+
+        //Combine categories and null category for total grade based on assignments
+        actualGrade = (assignmentCategories.stream().map(AssignmentCategory::getWeightedAverage).reduce(0.0, Double::sum)
+                + unassignedWeightedAverage) / 100;
     }
 
     public List<String> getAssignmentCategoryNames() {
@@ -110,30 +123,8 @@ public class Course extends AbstractEntity {
         return actualGrade;
     }
 
-    //TODO remove hard coding
-    private void calculateGrade() {
-        double testSum = 0;
-        for (int i = 0; i < assignments.size(); i++) {
-            testSum += assignments.get(i).getGrade();
-        };
-
-        this.testGradeAverage = testSum / assignments.size();
-        this.testCategoryPoints = testGradeAverage * testCategoryWeight;
-        // category weight * test average to get points that affect our grade
-        // 1 test w 96 average, 50% weightage makes 48 points of grade
-        this.actualGrade = 96;
-    }
-
-    public double getTestGradeAverage() {
-        return testGradeAverage;
-    }
-
-    public double getTestCategoryWeight() {
-        return testCategoryWeight;
-    }
-
-    public void setTestCategoryWeight(double testCategoryWeight) {
-        this.testCategoryWeight = testCategoryWeight;
+    public double getAssignedWeight() {
+        return assignedWeight;
     }
 }
 /*
