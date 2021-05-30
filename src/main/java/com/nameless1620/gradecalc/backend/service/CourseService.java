@@ -77,4 +77,13 @@ public class CourseService {
 //                            }).collect(Collectors.toList()));
 //        }
     }
+
+    public List<Course> fetchCourses(int offset, int limit) {
+        //TODO integrate offset and limit
+        return courseRepository.findAll();
+    }
+
+    public int getCourseCount() {
+        return (int)courseRepository.count();
+    }
 }

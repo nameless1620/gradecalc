@@ -15,8 +15,11 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import java.util.List;
 
 
 @PageTitle("GradeCalc | Joshika Sandbox")
@@ -62,7 +65,28 @@ public class JoshikaSandboxView extends VerticalLayout {
         Grid.Column<Course> assignedWeightageColumn = courseGrid
                 .addColumn(Course :: getAssignedWeight).setHeader("Assigned Weightage");
         courseGrid.addClassName("course-grid");
-        courseGrid.setItems(courseService.findAll());
+
+        DataProvider<Course, Void> dataProvider =
+                DataProvider.fromCallbacks(
+                        // First callback fetches items based on a query
+                        query -> {
+                            // The index of the first item to load
+                            int offset = query.getOffset();
+
+                            // The number of items to load
+                            int limit = query.getLimit();
+
+                            List<Course> courses = courseService
+                                    .fetchCourses(offset, limit);
+
+                            return courses.stream();
+                        },
+                        // Second callback fetches the total number of items currently in the Grid.
+                        // The grid can then use it to properly adjust the scrollbars.
+                        query -> courseService.getCourseCount());
+        courseGrid.setDataProvider(dataProvider);
+
+//        courseGrid.setItems(courseService.findAll());
         courseGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 
         //TODO: Figure out how to add single selection listener
@@ -296,7 +320,7 @@ public class JoshikaSandboxView extends VerticalLayout {
     private void addCourse() {
         courseService.addCourse(new Course("New Course"));
         //todo correctly implement data provider for course grid
-        courseGrid.setItems(courseService.findAll());
+//        courseGrid.setItems(courseService.findAll());
         fullGridRefresh();
     }
     private void removeCourse(){
@@ -304,7 +328,7 @@ public class JoshikaSandboxView extends VerticalLayout {
             return;
         courseService.removeCourse(courseGrid.asSingleSelect().getValue());
         //todo correctly implement data provider for course grid
-        courseGrid.setItems(courseService.findAll());
+//        courseGrid.setItems(courseService.findAll());
         fullGridRefresh();
     }
 
