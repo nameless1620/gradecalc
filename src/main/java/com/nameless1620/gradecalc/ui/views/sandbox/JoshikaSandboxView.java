@@ -236,9 +236,11 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .setFilter("event.key === 'Tab' && event.shiftKey");
         assignmentCategoryField.addValueChangeListener(
                 event -> {
-                    if (event.getValue() != null)
+                    if(event.isFromClient() && event.getValue() != null) {
                         currentAssignment().setCategory(
-                            currentCourse().getAssignmentCategoryByName(event.getValue()));
+                                currentCourse().getAssignmentCategoryByName(event.getValue()));
+                        fullGridRefresh();
+                    }
                 }
         );
         assignmentCategoryColumn.setEditorComponent(assignmentCategoryField);
@@ -309,40 +311,50 @@ public class JoshikaSandboxView extends VerticalLayout {
             currentCourse().addAssignments(new Assignment("New Assignment", currentCategory(), 0, 0));
         else
             currentCourse().addAssignments(new Assignment("New Assignment", 0, 0));
+        persistCourseChanges(currentCourse());
         fullGridRefresh();
     }
 
     private void removeAssignment(){
-        currentCourse().removeAssignment(assignmentGrid.asSingleSelect().getValue());
+        if (assignmentGrid.asSingleSelect().getValue() != null) {
+            currentCourse().removeAssignment(assignmentGrid.asSingleSelect().getValue());
+            persistCourseChanges(currentCourse());
+        }
         fullGridRefresh();
     }
 
     private void addCourse() {
         courseService.addCourse(new Course("New Course"));
         //todo correctly implement data provider for course grid
-//        courseGrid.setItems(courseService.findAll());
         fullGridRefresh();
     }
+
     private void removeCourse(){
         if(courseGrid.asSingleSelect().getValue() == null)
             return;
         courseService.removeCourse(courseGrid.asSingleSelect().getValue());
         //todo correctly implement data provider for course grid
-//        courseGrid.setItems(courseService.findAll());
         fullGridRefresh();
     }
 
     private void addCategory() {
-        if (lastSelectedCourse != null)
+        if (lastSelectedCourse != null) {
             currentCourse().addCategories(new AssignmentCategory("New Category", 0,0,  0));
-        else
-            currentCourse().addCategories(new AssignmentCategory("New Category", 0,0, 0));
+            persistCourseChanges(currentCourse());
+        }
         fullGridRefresh();
     }
 
     private void removeCategory(){
-        currentCourse().removeCategories(categoryGrid.asSingleSelect().getValue());
+        if (lastSelectedCourse != null) {
+            currentCourse().removeCategories(categoryGrid.asSingleSelect().getValue());
+            persistCourseChanges(currentCourse());
+        }
         fullGridRefresh();
+    }
+
+    private void persistCourseChanges(Course course) {
+        courseService.saveCourse(course);
     }
 
     private void fullGridRefresh() {
