@@ -82,7 +82,7 @@ public class Course extends AbstractEntity {
             return e;
         });
 
-        actualGrade = assignmentCategories.stream().map(AssignmentCategory::getWeightedAverage).reduce(0.0, Double::sum);
+        actualGrade = assignmentCategories.stream().map(AssignmentCategory::getWeightedAverage).reduce(0.0, Double::sum) / 100;
     }
 
     public List<String> getAssignmentCategoryNames() {
