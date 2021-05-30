@@ -23,6 +23,14 @@ public class CourseService {
 
     }
 
+    public void addCourse(Course course) {
+        courseRepository.save(course);
+    }
+
+    public void removeCourse(Course course) {
+        courseRepository.delete(course);
+    }
+
     @PostConstruct
     public void populateTestData() {
         if (courseRepository.count() == 0) {

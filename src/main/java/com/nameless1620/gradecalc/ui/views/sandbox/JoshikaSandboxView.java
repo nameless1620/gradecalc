@@ -18,6 +18,8 @@ import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
+import java.util.function.ToDoubleBiFunction;
+
 @PageTitle("GradeCalc | Joshika Sandbox")
 @Route(value = "joshikasandbox", layout = MainLayout.class)
 public class JoshikaSandboxView extends VerticalLayout {
@@ -51,17 +53,38 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void configureCourseGrid() {
+        courseGrid.setColumns();
+        Grid.Column<Course> courseNameColumn = courseGrid
+                .addColumn(Course:: getCourseName).setHeader("Course Name");
+        Grid.Column<Course> actualGradeColumn = courseGrid
+                .addColumn(Course:: getActualGrade).setHeader("Actual Grade");
+        Grid.Column<Course> desiredGradeColumn = courseGrid
+                .addColumn(Course::getDesiredGrade).setHeader("Desired Grade");
+        Grid.Column<Course> assignedWeightageColumn = courseGrid
+                .addColumn(Course :: getAssignedWeight).setHeader("Assigned Weightage");
         courseGrid.addClassName("course-grid");
-        courseGrid.removeColumnByKey("assignments");
-        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade", "assignedWeight");
         courseGrid.setItems(courseService.findAll());
-        courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
         courseGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 
         //TODO: Figure out how to add single selection listener
         courseGrid.addSelectionListener(selectionEvent ->
                 courseSelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
 
+        Button addCourseButton = new Button("Add Course", event -> {
+            addCourse();
+        });
+
+        Button removeCourseButton = new Button("Remove Course", event ->{
+            removeCourse();
+        });
+
+        FooterRow footerRow = courseGrid.appendFooterRow();
+        footerRow.getCell(courseNameColumn).setComponent(addCourseButton);
+        footerRow.getCell(actualGradeColumn).setComponent(removeCourseButton);
+        add(addCourseButton,removeCourseButton);
+//        Button removeAssignmentButton = new Button("Remove Selected Assignment", event -> {
+//            removeAssignment();
+//        });
 //        courseGrid.asSingleSelect().addValueChangeListener(event -> {
 //            updateCategoryList();
 //        });
@@ -251,6 +274,21 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     private void removeAssignment(){
         currentCourse().removeAssignment(assignmentGrid.asSingleSelect().getValue());
+        fullGridRefresh();
+    }
+
+    private void addCourse() {
+        courseService.addCourse(new Course("New Course"));
+        //todo correctly implement data provider for course grid
+        courseGrid.setItems(courseService.findAll());
+        fullGridRefresh();
+    }
+    private void removeCourse(){
+        if(courseGrid.asSingleSelect().getValue() == null)
+            return;
+        courseService.removeCourse(courseGrid.asSingleSelect().getValue());
+        //todo correctly implement data provider for course grid
+        courseGrid.setItems(courseService.findAll());
         fullGridRefresh();
     }
 
