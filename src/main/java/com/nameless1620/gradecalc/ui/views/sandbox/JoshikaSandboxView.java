@@ -108,7 +108,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         courseNameField.getElement()
                 .addEventListener("keydown",
                         event -> courseGrid.getEditor().cancel())
-                .setFilter("event.key +++ 'Tab' && event.shiftKey");
+                .setFilter("event.key === 'Tab' && event.shiftKey");
         binder.forField(courseNameField)
                 .bind(Course::getCourseName, Course::setCourseName);
         courseNameColumn.setEditorComponent(courseNameField);
