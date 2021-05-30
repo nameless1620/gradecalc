@@ -81,6 +81,13 @@ public class Course extends AbstractEntity {
                 .collect(Collectors.toList());
     }
 
+    public AssignmentCategory getAssignmentCategoryByName(String categoryName) {
+        return assignmentCategories.stream()
+                .filter(category -> categoryName.equals(category.getCategoryName()))
+                .findAny()
+                .orElse(null);
+    }
+
     public double getDesiredGrade() {
         return desiredGrade;
     }

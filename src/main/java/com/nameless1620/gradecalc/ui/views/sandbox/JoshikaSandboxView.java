@@ -11,13 +11,22 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSelectionModel;
+import com.vaadin.flow.component.grid.GridSingleSelectionModel;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.selection.SelectionEvent;
+import com.vaadin.flow.data.selection.SelectionModel;
+import com.vaadin.flow.data.selection.SingleSelectionEvent;
+import com.vaadin.flow.data.selection.SingleSelectionListener;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.expression.spel.ast.Assign;
@@ -37,9 +46,11 @@ public class JoshikaSandboxView extends VerticalLayout {
 //    List<Assignment> assignments = new ArrayList<Assignment>(); DEPRECATED
 
     Grid<Course> courseGrid = new Grid<>(Course.class);
+    Course lastSelectedCourse = new Course();
     Grid<Assignment> assignmentGrid = new Grid<>(Assignment.class);
-    Grid<AssignmentCategory> categoryGrid = new Grid<>(AssignmentCategory.class);
     Assignment lastSelectedAssignment = new Assignment();
+    Grid<AssignmentCategory> categoryGrid = new Grid<>(AssignmentCategory.class);
+    AssignmentCategory lastSelectedAssignmentCategory = new AssignmentCategory();
 
     ComboBox<String> category = new ComboBox<>("Category");
 
@@ -51,12 +62,42 @@ public class JoshikaSandboxView extends VerticalLayout {
         //initial configuration of the view
         this.courseService = courseService;
         configureCourseGrid();
-        configureAssignmentGrid();
         configureCategoryGrid();
+        configureAssignmentGrid();
 
         //add components to this list to be displayed, order matters!!!
         add(courseGrid, categoryGrid, assignmentGrid);
-        updateCourseList();
+    }
+
+    private void configureCourseGrid() {
+        courseGrid.addClassName("course-grid");
+        courseGrid.removeColumnByKey("assignments");
+        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade", "testGradeAverage");
+        courseGrid.setItems(courseService.findAll());
+        courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
+        courseGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+
+        //TODO: Figure out how to add single selection listener
+        courseGrid.addSelectionListener(selectionEvent ->
+                courseSelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
+
+//        courseGrid.asSingleSelect().addValueChangeListener(event -> {
+//            updateCategoryList();
+//        });
+    }
+
+    private void courseSelectionChange(Course course) {
+        if (course != null) {
+            lastSelectedCourse = course;
+            categoryGrid.setItems(course.getAssignmentCategories());
+            assignmentGrid.setItems(course.getAssignments());
+        }
+        else {
+            categoryGrid.setItems();
+            lastSelectedAssignmentCategory = null;
+            assignmentGrid.setItems();
+            lastSelectedAssignment = null;
+        }
     }
 
     private void configureCategoryGrid(){
@@ -67,11 +108,30 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addColumn(AssignmentCategory::getNumberOfAssignments).setHeader("Number of Assignments");
         Grid.Column<AssignmentCategory> assignmentAverageColumn = categoryGrid
                 .addColumn(AssignmentCategory::getCategoryAverage).setHeader("Average");
-        categoryGrid.asSingleSelect().addValueChangeListener(event -> {
-            updateAssignmentList();
-        });
+        categoryGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 
+        //TODO: Figure out how to add single selection listener
+        categoryGrid.addSelectionListener(selectionEvent ->
+                categorySelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
 
+//        categoryGrid.asSingleSelect().addValueChangeListener(event -> {
+//            updateAssignmentList();
+//        });
+    }
+
+    private void categorySelectionChange(AssignmentCategory category) {
+        lastSelectedAssignmentCategory = category;
+        assignmentGrid.setItems(currentCourse()
+                .getAssignments()
+                .stream()
+                .filter(assignment -> assignment.getCategory() == category));
+    }
+
+    private void assignmentSelectionChange(Assignment assignment) {
+        //TODO: figure out better handling of the deselection when editing fields in grid
+        if (assignment != null) {
+            lastSelectedAssignment = assignment;
+        }
     }
 
     private void configureAssignmentGrid() {
@@ -87,12 +147,14 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addColumn(Assignment::getWrongQuestions).setHeader("Errors");
         Grid.Column<Assignment> assignmentGradeColumn = assignmentGrid
                 .addColumn(Assignment::getGrade).setHeader("Grade");
+        assignmentGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+
+//        //TODO: Figure out how to add single selection listener
+//        assignmentGrid.addSelectionListener(selectionEvent ->
+//                assignmentSelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
 
         Button addAssignmentButton = new Button("Add Assignment", event -> {
-            addAssignment("New Assignment",
-                    categoryGrid.asSingleSelect().getValue(),
-                    "0",
-                    "0");
+            addAssignment();
         });
         Button removeAssignmentButton = new Button("Remove Selected Assignment", event -> {
             removeAssignment();
@@ -113,15 +175,19 @@ public class JoshikaSandboxView extends VerticalLayout {
         assignmentNameColumn.setEditorComponent(assignmentNameField);
 
         Select<AssignmentCategory> assignmentCategoryField = new Select<>();
-        //TODO think through null value handling / data strategy
         assignmentGrid.addSelectionListener(
                 event -> {
                     assignmentCategoryField.setItems(
+                            currentCourse().getAssignmentCategories());
+//                            currentCourse().getAssignmentCategoryNames());
 //                            courseGrid.asSingleSelect().getValue().getAssignmentCategoryNames());
-                            courseGrid.asSingleSelect().getValue().getAssignmentCategories());
-                    lastSelectedAssignment = assignmentGrid.asSingleSelect().getValue();
+//                            courseGrid.asSingleSelect().getValue().getAssignmentCategories());
+//                    lastSelectedAssignment = assignmentGrid.asSingleSelect().getValue();
+                  //TODO: switch to SingleSelectionEvent
+                    assignmentSelectionChange(event.getAllSelectedItems().stream().findFirst().orElse(null));
                 }
         );
+
 //        if(courseGrid.asSingleSelect().getValue() != null) {
 //            assignmentCategoryField.setItems(
 //                    courseGrid.asSingleSelect().getValue().getAssignmentCategoryNames()
@@ -132,20 +198,13 @@ public class JoshikaSandboxView extends VerticalLayout {
                         event -> assignmentGrid.getEditor().cancel())
                 .setFilter("event.key === 'Tab' && event.shiftKey");
         assignmentCategoryField.addValueChangeListener(
-                event -> {
-                    if (assignmentGrid.asSingleSelect().getValue() != null)
-                        assignmentGrid.asSingleSelect().getValue().setCategory(event.getValue());
-                    if (lastSelectedAssignment != null)
-                        lastSelectedAssignment.setCategory(event.getValue());
-                }
+                event -> currentAssignment().setCategory(event.getValue())
         );
 //        binder.forField(assignmentCategoryField)
 //                .bind(Assignment::getCategoryName, Assignment::setCategory);
         binder.forField(assignmentCategoryField)
                 .bind(Assignment::getCategory, Assignment::setCategory);
-
         assignmentCategoryColumn.setEditorComponent(assignmentCategoryField);
-
 
 
         TextField assignmentQuestionsField = new TextField();
@@ -185,58 +244,42 @@ public class JoshikaSandboxView extends VerticalLayout {
         footerRow.getCell(assignmentCategoryColumn).setComponent(removeAssignmentButton);
         footerRow.getCell(assignmentQuestionsColumn).setComponent(assignmentInstructions);
         add(addAssignmentButton, removeAssignmentButton, assignmentInstructions);
-        updateAssignmentList();
+//        updateAssignmentList();
     }
 
-    private void updateAssignmentList(){
-        Course selectedCourse = courseGrid.asSingleSelect().getValue();
-        if(selectedCourse != null){
-            assignmentGrid.setItems(selectedCourse.getAssignments());
- //           category.setItems(selectedCourse.getAssignmentCategories());
+    //Currently selected course in the Course grid
+    public Course currentCourse() {
+        if(lastSelectedCourse != null)
+            return lastSelectedCourse;
+        else throw new IllegalStateException("No course selected");
+    }
+
+    //Currently selected assignment category in the category grid
+    public AssignmentCategory currentCategory() {
+        if(lastSelectedAssignmentCategory != null)
+            return lastSelectedAssignmentCategory;
+        else throw new IllegalStateException("No category selected");
+    }
+
+    //Currently selected assignment in the assignment grid
+    public Assignment currentAssignment() {
+        if (lastSelectedAssignment != null) {
+            return lastSelectedAssignment;
         }
+        else throw new IllegalStateException("No assignment selected");
     }
 
-    private void updateCategoryList(){
-        Course selectedCourse = courseGrid.asSingleSelect().getValue();
-        if(selectedCourse != null){
-            categoryGrid.setItems(selectedCourse.getAssignmentCategories());
-        }
-
-//        assignmentCategoryField.setItems(
-//                courseGrid.asSingleSelect().getValue().getAssignmentCategoryNames();
-    }
-
-    private void addAssignment(String name, AssignmentCategory category, String questions, String wrongQuestions) {
-        courseGrid.asSingleSelect().getValue().addAssignments(
-                new Assignment(name, category, Double.parseDouble(questions), Double.parseDouble(wrongQuestions))
-        );
+    private void addAssignment() {
+        if (currentCategory() != null)
+            currentCourse().addAssignments(new Assignment("New Assignment", currentCategory(), 0, 0));
+        else
+            currentCourse().addAssignments(new Assignment("New Assignment", 0, 0));
         assignmentGrid.getDataProvider().refreshAll();
-    }
-
-    private void updateAssignment(Assignment assignment){
-
     }
 
     private void removeAssignment(){
-        courseGrid.asSingleSelect().getValue().removeAssignment(assignmentGrid.asSingleSelect().getValue());
+        currentCourse().removeAssignment(assignmentGrid.asSingleSelect().getValue());
         assignmentGrid.getDataProvider().refreshAll();
-    }
-
-    private void configureCourseGrid() {
-        courseGrid.addClassName("course-grid");
-        courseGrid.removeColumnByKey("assignments");
-        courseGrid.setColumns("courseName", "actualGrade", "desiredGrade", "testGradeAverage");
-        courseGrid.setItems(courseService.findAll());
-        courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
-        courseGrid.asSingleSelect().addValueChangeListener(event -> {
-            updateCategoryList();
-        });
-    }
-
-    private void updateCourseList() {
-        //TODO: stop using this for refresh
-        courseGrid.getDataProvider().refreshAll();
-        updateAssignmentList();
     }
 }
 
