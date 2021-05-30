@@ -20,7 +20,10 @@ public class CourseService {
 
     public List<Course> findAll() {
         return courseRepository.findAll();
+    }
 
+    public Course saveCourse(Course course) {
+        return courseRepository.save(course);
     }
 
     public void addCourse(Course course) {
@@ -84,6 +87,6 @@ public class CourseService {
     }
 
     public int getCourseCount() {
-        return (int)courseRepository.count();
+        return Math.toIntExact(courseRepository.count());
     }
 }
