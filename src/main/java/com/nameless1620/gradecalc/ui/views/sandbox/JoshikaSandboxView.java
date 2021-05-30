@@ -194,6 +194,10 @@ public class JoshikaSandboxView extends VerticalLayout {
         Grid.Column<Assignment> assignmentGradeColumn = assignmentGrid
                 .addColumn(Assignment::getGrade).setHeader("Grade");
         assignmentGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        assignmentGrid.getEditor().addSaveListener(e -> {
+            persistCourseChanges(currentCourse());
+            fullGridRefresh();
+        });
 
 //        //TODO: Figure out how to add single selection listener
 //        assignmentGrid.addSelectionListener(selectionEvent ->
@@ -211,11 +215,23 @@ public class JoshikaSandboxView extends VerticalLayout {
         assignmentGrid.getEditor().setBinder(binder);
 
         TextField assignmentNameField = new TextField();
+        assignmentNameField.addValueChangeListener(
+                event -> {
+                    if(event.isFromClient() && event.getValue() != null) {
+                        if(!event.getOldValue().equals(event.getValue())) {
+                            currentAssignment().setName(event.getValue());
+                            persistCourseChanges(currentCourse());
+                            fullGridRefresh();
+                        }
+                    }
+                }
+        );
         // Close the editor in case of backward between components
         assignmentNameField.getElement()
                 .addEventListener("keydown",
                         event -> assignmentGrid.getEditor().cancel())
                 .setFilter("event.key === 'Tab' && event.shiftKey");
+        //TODO setter is redundant with value changed listener
         binder.forField(assignmentNameField)
             .bind(Assignment::getName, Assignment::setName);
         assignmentNameColumn.setEditorComponent(assignmentNameField);
@@ -239,6 +255,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                     if(event.isFromClient() && event.getValue() != null) {
                         currentAssignment().setCategory(
                                 currentCourse().getAssignmentCategoryByName(event.getValue()));
+                        persistCourseChanges(currentCourse());
                         fullGridRefresh();
                     }
                 }
@@ -246,11 +263,23 @@ public class JoshikaSandboxView extends VerticalLayout {
         assignmentCategoryColumn.setEditorComponent(assignmentCategoryField);
 
         TextField assignmentQuestionsField = new TextField();
+        assignmentQuestionsField.addValueChangeListener(
+                event -> {
+                    if(event.isFromClient() && event.getValue() != null) {
+                        if(!event.getOldValue().equals(event.getValue())) {
+                            currentAssignment().setQuestions(Double.parseDouble(event.getValue()));
+                            persistCourseChanges(currentCourse());
+                            fullGridRefresh();
+                        }
+                    }
+                }
+        );
         // Close the editor in case of backward between components
         assignmentQuestionsField.getElement()
                 .addEventListener("keydown",
                         event -> assignmentGrid.getEditor().cancel())
                 .setFilter("event.key === 'Tab' && event.shiftKey");
+        //TODO setter is redundant with value changed event
         binder.forField(assignmentQuestionsField)
                 .withConverter(
                         new StringToDoubleConverter("Questions must be a number"))
@@ -258,6 +287,17 @@ public class JoshikaSandboxView extends VerticalLayout {
         assignmentQuestionsColumn.setEditorComponent(assignmentQuestionsField);
 
         TextField assignmentErrorsField = new TextField();
+        assignmentErrorsField.addValueChangeListener(
+                event -> {
+                    if(event.isFromClient() && event.getValue() != null) {
+                        if(!event.getOldValue().equals(event.getValue())) {
+                            currentAssignment().setWrongQuestions(Double.parseDouble(event.getValue()));
+                            persistCourseChanges(currentCourse());
+                            fullGridRefresh();
+                        }
+                    }
+                }
+        );
         // Close the editor in case of backward between components
 //        assignmentErrorsField.getElement()
 //                .addEventListener("close"),
@@ -266,6 +306,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addEventListener("keydown",
                         event -> assignmentGrid.getEditor().cancel())
                 .setFilter("event.key === 'Tab' && event.shiftKey");
+        //TODO setter is redundant with value changed listener
         binder.forField(assignmentErrorsField)
                 .withConverter(
                         new StringToDoubleConverter("Errors must be a number"))
@@ -354,6 +395,7 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void persistCourseChanges(Course course) {
+        course.calculateGrades();
         courseService.saveCourse(course);
     }
 
