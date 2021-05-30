@@ -14,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.PageTitle;
@@ -154,6 +155,7 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void configureCategoryGrid(){
+        //COLUMN CONFIG
         categoryGrid.setColumns();
         Grid.Column<AssignmentCategory> assignmentCategoryNameColumn = categoryGrid
                 .addColumn(AssignmentCategory::getCategoryName).setHeader("Category");
@@ -161,38 +163,80 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addColumn(AssignmentCategory::getNumberOfAssignments).setHeader("Number of Assignments");
         Grid.Column<AssignmentCategory> assignmentAverageColumn = categoryGrid
                 .addColumn(AssignmentCategory::getCategoryAverage).setHeader("Average");
-        Grid.Column<AssignmentCategory> assignmentWeightColumn = categoryGrid
+        Grid.Column<AssignmentCategory> assignmentCategoryWeightColumn = categoryGrid
                 .addColumn(AssignmentCategory::getCategoryWeight).setHeader("Weight");
-        categoryGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 
+        //BINDER AND EDITOR
+        categoryGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
+        Binder<AssignmentCategory> binder = new Binder<>(AssignmentCategory.class);
+        categoryGrid.getEditor().setBinder(binder);
+
+        //GRID EVENTS
         //TODO: Figure out how to add single selection listener
         categoryGrid.addSelectionListener(selectionEvent ->
                 categorySelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
+        categoryGrid.addItemDoubleClickListener(event -> {
+            categoryGrid.getEditor().editItem(event.getItem());
+        });
 
-//        categoryGrid.asSingleSelect().addValueChangeListener(event -> {
-//            updateAssignmentList();
-//        });
+        //CATEGORY NAME EDITOR
+        TextField assignmentCategoryNameField = new TextField();
+        assignmentCategoryNameField.addValueChangeListener(
+                event -> {
+                    if(event.isFromClient() && event.getValue() != null) {
+                        if(!event.getOldValue().equals(event.getValue())) {
+                            currentCategory().setCategoryName(event.getValue());
+                            persistCourseChanges(currentCourse());
+                            fullGridRefresh();}}});
+        // Close the editor in case of backward between components
+        assignmentCategoryNameField.getElement()
+                .addEventListener("keydown",
+                        event -> assignmentGrid.getEditor().cancel())
+                .setFilter("event.key === 'Tab' && event.shiftKey");
+        //TODO setter is redundant with value changed listener
+        binder.forField(assignmentCategoryNameField)
+                .bind(AssignmentCategory::getCategoryName, AssignmentCategory::setCategoryName);
+        assignmentCategoryNameColumn.setEditorComponent(assignmentCategoryNameField);
 
+        //CATEGORY WEIGHT EDITOR
+        TextField assignmentCategoryWeightField = new TextField();
+        assignmentCategoryWeightField.addValueChangeListener(
+                event -> {
+                    if(event.isFromClient() && event.getValue() != null) {
+                        if(!event.getOldValue().equals(event.getValue())) {
+                            currentCategory().setCategoryWeight(Double.parseDouble(event.getValue()));
+                            persistCourseChanges(currentCourse());
+                            fullGridRefresh();}}});
+        // Close the editor in case of backward between components
+        assignmentCategoryWeightField.getElement()
+                .addEventListener("keydown",
+                        event -> assignmentGrid.getEditor().cancel())
+                .setFilter("event.key === 'Tab' && event.shiftKey");
+        //TODO setter is redundant with value changed listener
+        binder.forField(assignmentCategoryWeightField)
+                .withConverter(new StringToDoubleConverter("Weight must be a number"))
+                .bind(AssignmentCategory::getCategoryWeight, AssignmentCategory::setCategoryWeight);
+        assignmentCategoryWeightColumn.setEditorComponent(assignmentCategoryWeightField);
+
+        //FOOTER ROW
         Button addCategoryButton = new Button("Add Category", event -> {
             addCategory();
         });
         Button removeCategoryButton = new Button("Remove Selected Category", event -> {
             removeCategory();
         });
-         Text categoryInstructions = new Text("HINT: Double click a cell to edit");
-
+        Text categoryInstructions = new Text("HINT: Double click a cell to edit");
         FooterRow footerRow = categoryGrid.appendFooterRow();
         footerRow.getCell(assignmentCategoryNameColumn).setComponent(addCategoryButton);
         footerRow.getCell(numberOfAssignmentsColumn).setComponent(removeCategoryButton);
         footerRow.getCell(assignmentAverageColumn).setComponent(categoryInstructions);
         add(addCategoryButton, removeCategoryButton, categoryInstructions);
-
-
-}
-
+    }
 
     private void categorySelectionChange(AssignmentCategory category) {
-        lastSelectedAssignmentCategory = category;
+        if (category != null) {
+            lastSelectedAssignmentCategory = category;
+        }
         assignmentGrid.setItems(currentCourse()
                 .getAssignments()
                 .stream()
@@ -220,10 +264,6 @@ public class JoshikaSandboxView extends VerticalLayout {
         Grid.Column<Assignment> assignmentGradeColumn = assignmentGrid
                 .addColumn(Assignment::getGrade).setHeader("Grade");
         assignmentGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-        assignmentGrid.getEditor().addSaveListener(e -> {
-            persistCourseChanges(currentCourse());
-            fullGridRefresh();
-        });
 
 //        //TODO: Figure out how to add single selection listener
 //        assignmentGrid.addSelectionListener(selectionEvent ->
