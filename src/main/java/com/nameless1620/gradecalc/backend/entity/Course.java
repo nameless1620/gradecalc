@@ -133,8 +133,16 @@ public class Course extends AbstractEntity {
         return actualGrade;
     }
 
+    public void setActualGrade(double actualGrade) {
+        this.actualGrade = actualGrade;
+    }
+
     public double getAssignedWeight() {
         return assignedWeight;
+    }
+
+    public void setAssignedWeight(double assignedWeight) {
+        this.assignedWeight = assignedWeight;
     }
 }
 /*

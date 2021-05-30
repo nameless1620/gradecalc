@@ -101,13 +101,39 @@ public class JoshikaSandboxView extends VerticalLayout {
             removeCourse();
         });
 
+        Binder<Course> binder = new Binder<>(Course.class);
+        courseGrid.getEditor().setBinder(binder);
+
+        TextField courseNameField = new TextField();
+        courseNameField.getElement()
+                .addEventListener("keydown",
+                        event -> courseGrid.getEditor().cancel())
+                .setFilter("event.key +++ 'Tab' && event.shiftKey");
+        binder.forField(courseNameField)
+                .bind(Course::getCourseName, Course::setCourseName);
+        courseNameColumn.setEditorComponent(courseNameField);
+
+        TextField courseDesiredGradeField = new TextField();
+        courseDesiredGradeField.getElement()
+                .addEventListener("keydown",
+                        event -> courseGrid.getEditor().cancel())
+                .setFilter("event.key === 'Tab' && event.shiftKey");
+        binder.forField(courseDesiredGradeField)
+                .withConverter(
+                        new StringToDoubleConverter("Desired Grade must be a number"))
+                .bind(Course::getDesiredGrade, Course::setDesiredGrade);
+        desiredGradeColumn.setEditorComponent(courseDesiredGradeField);
+
+        courseGrid.addItemDoubleClickListener(event -> {
+            courseGrid.getEditor().editItem(event.getItem());
+            courseNameField.focus();
+        });
+
         FooterRow footerRow = courseGrid.appendFooterRow();
         footerRow.getCell(courseNameColumn).setComponent(addCourseButton);
         footerRow.getCell(actualGradeColumn).setComponent(removeCourseButton);
         add(addCourseButton,removeCourseButton);
-//        Button removeAssignmentButton = new Button("Remove Selected Assignment", event -> {
-//            removeAssignment();
-//        });
+
 //        courseGrid.asSingleSelect().addValueChangeListener(event -> {
 //            updateCategoryList();
 //        });
