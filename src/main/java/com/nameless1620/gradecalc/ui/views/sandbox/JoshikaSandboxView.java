@@ -17,6 +17,7 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import jdk.jfr.Category;
 
 @PageTitle("GradeCalc | Joshika Sandbox")
 @Route(value = "joshikasandbox", layout = MainLayout.class)
@@ -58,6 +59,8 @@ public class JoshikaSandboxView extends VerticalLayout {
         courseGrid.getColumns().forEach(col -> col.setAutoWidth(true));
         courseGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 
+
+
         //TODO: Figure out how to add single selection listener
         courseGrid.addSelectionListener(selectionEvent ->
                 courseSelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
@@ -83,9 +86,9 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     private void configureCategoryGrid(){
         categoryGrid.setColumns();
-        Grid.Column<AssignmentCategory> assignmentNameColumn = categoryGrid
+        Grid.Column<AssignmentCategory> assignmentCategoryNameColumn = categoryGrid
                 .addColumn(AssignmentCategory::getCategoryName).setHeader("Category");
-        Grid.Column<AssignmentCategory> assignmentCategoryColumn = categoryGrid
+        Grid.Column<AssignmentCategory> numberOfAssignmentsColumn = categoryGrid
                 .addColumn(AssignmentCategory::getNumberOfAssignments).setHeader("Number of Assignments");
         Grid.Column<AssignmentCategory> assignmentAverageColumn = categoryGrid
                 .addColumn(AssignmentCategory::getCategoryAverage).setHeader("Average");
@@ -100,7 +103,24 @@ public class JoshikaSandboxView extends VerticalLayout {
 //        categoryGrid.asSingleSelect().addValueChangeListener(event -> {
 //            updateAssignmentList();
 //        });
-    }
+
+        Button addCategoryButton = new Button("Add Category", event -> {
+            addCategory();
+        });
+        Button removeCategoryButton = new Button("Remove Selected Category", event -> {
+            removeCategory();
+        });
+         Text categoryInstructions = new Text("HINT: Double click a cell to edit");
+
+        FooterRow footerRow = categoryGrid.appendFooterRow();
+        footerRow.getCell(assignmentCategoryNameColumn).setComponent(addCategoryButton);
+        footerRow.getCell(numberOfAssignmentsColumn).setComponent(removeCategoryButton);
+        footerRow.getCell(assignmentAverageColumn).setComponent(categoryInstructions);
+        add(addCategoryButton, removeCategoryButton, categoryInstructions);
+
+
+}
+
 
     private void categorySelectionChange(AssignmentCategory category) {
         lastSelectedAssignmentCategory = category;
@@ -142,6 +162,8 @@ public class JoshikaSandboxView extends VerticalLayout {
         Button removeAssignmentButton = new Button("Remove Selected Assignment", event -> {
             removeAssignment();
         });
+
+
         Text assignmentInstructions = new Text("HINT: Double click a cell to edit");
 
         Binder<Assignment> binder = new Binder<>(Assignment.class);
@@ -251,6 +273,19 @@ public class JoshikaSandboxView extends VerticalLayout {
 
     private void removeAssignment(){
         currentCourse().removeAssignment(assignmentGrid.asSingleSelect().getValue());
+        fullGridRefresh();
+    }
+
+    private void addCategory() {
+        if (lastSelectedCourse != null)
+            currentCourse().addCategories(new AssignmentCategory("New Category", 0,0,  0));
+        else
+            currentCourse().addCategories(new AssignmentCategory("New Category", 0,0, 0));
+        fullGridRefresh();
+    }
+
+    private void removeCategory(){
+        currentCourse().removeCategories(categoryGrid.asSingleSelect().getValue());
         fullGridRefresh();
     }
 

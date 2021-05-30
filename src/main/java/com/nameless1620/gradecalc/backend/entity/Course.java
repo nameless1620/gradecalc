@@ -52,6 +52,16 @@ public class Course extends AbstractEntity {
         calculateGrades();
     }
 
+    public void addCategories(AssignmentCategory category) {
+        this.assignmentCategories.add(category);
+        calculateGrades();
+    }
+
+    public void removeCategories(AssignmentCategory category) {
+        this.assignmentCategories.remove(category);
+        calculateGrades();
+    }
+
     public Set<AssignmentCategory> getAssignmentCategories() {
         return assignmentCategories;
     }
