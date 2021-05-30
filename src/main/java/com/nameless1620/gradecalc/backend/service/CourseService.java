@@ -20,7 +20,18 @@ public class CourseService {
 
     public List<Course> findAll() {
         return courseRepository.findAll();
+    }
 
+    public Course saveCourse(Course course) {
+        return courseRepository.save(course);
+    }
+
+    public void addCourse(Course course) {
+        courseRepository.save(course);
+    }
+
+    public void removeCourse(Course course) {
+        courseRepository.delete(course);
     }
 
     @PostConstruct
@@ -68,5 +79,14 @@ public class CourseService {
 //                                return contact;
 //                            }).collect(Collectors.toList()));
 //        }
+    }
+
+    public List<Course> fetchCourses(int offset, int limit) {
+        //TODO integrate offset and limit
+        return courseRepository.findAll();
+    }
+
+    public int getCourseCount() {
+        return Math.toIntExact(courseRepository.count());
     }
 }
