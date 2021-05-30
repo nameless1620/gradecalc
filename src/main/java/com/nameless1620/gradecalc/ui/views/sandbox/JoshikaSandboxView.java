@@ -3,7 +3,6 @@ package com.nameless1620.gradecalc.ui.views.sandbox;
 import com.nameless1620.gradecalc.backend.entity.Assignment;
 import com.nameless1620.gradecalc.backend.entity.AssignmentCategory;
 import com.nameless1620.gradecalc.backend.entity.Course;
-import com.nameless1620.gradecalc.backend.service.CategoryService;
 import com.nameless1620.gradecalc.backend.service.CourseService;
 import com.nameless1620.gradecalc.ui.MainLayout;
 import com.vaadin.flow.component.Text;
@@ -11,31 +10,13 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridSelectionModel;
-import com.vaadin.flow.component.grid.GridSingleSelectionModel;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
-import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.Query;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.selection.SelectionEvent;
-import com.vaadin.flow.data.selection.SelectionModel;
-import com.vaadin.flow.data.selection.SingleSelectionEvent;
-import com.vaadin.flow.data.selection.SingleSelectionListener;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import org.springframework.expression.spel.ast.Assign;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
 
 @PageTitle("GradeCalc | Joshika Sandbox")
 @Route(value = "joshikasandbox", layout = MainLayout.class)
@@ -108,6 +89,8 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addColumn(AssignmentCategory::getNumberOfAssignments).setHeader("Number of Assignments");
         Grid.Column<AssignmentCategory> assignmentAverageColumn = categoryGrid
                 .addColumn(AssignmentCategory::getCategoryAverage).setHeader("Average");
+        Grid.Column<AssignmentCategory> assignmentWeightColumn = categoryGrid
+                .addColumn(AssignmentCategory::getCategoryWeight).setHeader("Weight");
         categoryGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 
         //TODO: Figure out how to add single selection listener
@@ -174,38 +157,28 @@ public class JoshikaSandboxView extends VerticalLayout {
             .bind(Assignment::getName, Assignment::setName);
         assignmentNameColumn.setEditorComponent(assignmentNameField);
 
-        Select<AssignmentCategory> assignmentCategoryField = new Select<>();
+        Select<String> assignmentCategoryField = new Select<>();
         assignmentGrid.addSelectionListener(
                 event -> {
                     assignmentCategoryField.setItems(
-                            currentCourse().getAssignmentCategories());
-//                            currentCourse().getAssignmentCategoryNames());
-//                            courseGrid.asSingleSelect().getValue().getAssignmentCategoryNames());
-//                            courseGrid.asSingleSelect().getValue().getAssignmentCategories());
-//                    lastSelectedAssignment = assignmentGrid.asSingleSelect().getValue();
+                            currentCourse().getAssignmentCategoryNames());
                   //TODO: switch to SingleSelectionEvent
                     assignmentSelectionChange(event.getAllSelectedItems().stream().findFirst().orElse(null));
                 }
         );
 
-//        if(courseGrid.asSingleSelect().getValue() != null) {
-//            assignmentCategoryField.setItems(
-//                    courseGrid.asSingleSelect().getValue().getAssignmentCategoryNames()
-//            );
-//        }
         assignmentCategoryField.getElement()
                 .addEventListener("keydown",
                         event -> assignmentGrid.getEditor().cancel())
                 .setFilter("event.key === 'Tab' && event.shiftKey");
         assignmentCategoryField.addValueChangeListener(
-                event -> currentAssignment().setCategory(event.getValue())
+                event -> {
+                    if (event.getValue() != null)
+                        currentAssignment().setCategory(
+                            currentCourse().getAssignmentCategoryByName(event.getValue()));
+                }
         );
-//        binder.forField(assignmentCategoryField)
-//                .bind(Assignment::getCategoryName, Assignment::setCategory);
-        binder.forField(assignmentCategoryField)
-                .bind(Assignment::getCategory, Assignment::setCategory);
         assignmentCategoryColumn.setEditorComponent(assignmentCategoryField);
-
 
         TextField assignmentQuestionsField = new TextField();
         // Close the editor in case of backward between components
@@ -244,7 +217,6 @@ public class JoshikaSandboxView extends VerticalLayout {
         footerRow.getCell(assignmentCategoryColumn).setComponent(removeAssignmentButton);
         footerRow.getCell(assignmentQuestionsColumn).setComponent(assignmentInstructions);
         add(addAssignmentButton, removeAssignmentButton, assignmentInstructions);
-//        updateAssignmentList();
     }
 
     //Currently selected course in the Course grid

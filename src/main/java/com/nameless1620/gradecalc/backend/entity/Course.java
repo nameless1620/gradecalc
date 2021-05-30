@@ -1,8 +1,11 @@
 package com.nameless1620.gradecalc.backend.entity;
 
+import org.springframework.expression.spel.ast.Assign;
+
 import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Course extends AbstractEntity {
@@ -20,18 +23,19 @@ public class Course extends AbstractEntity {
 //    private double weightagePerAssignmentCategory;
 
     private String courseName;
-    private double actualGrade;
-    private double desiredGrade;
-    private double testGradeAverage;
-    private double testCategoryWeight;
+    private double actualGrade = 0;
+    private double desiredGrade = 0;
+    private double testGradeAverage = 0;
+    private double testCategoryWeight = 0;
     private double testCategoryPoints;
 
     public Course (){
-
+        calculateGrades();
     }
 
     public Course (String name) {
         this.courseName = name;
+        calculateGrades();
     }
 
     public String getCourseName() {
@@ -48,31 +52,37 @@ public class Course extends AbstractEntity {
 
     public void addAssignments(Assignment assignment) {
         this.assignments.add(assignment);
-        calculateGrade();
+        calculateGrades();
     }
 
     public void removeAssignment(Assignment assignment) {
         this.assignments.remove(assignment);
-        calculateGrade();
+        calculateGrades();
     }
 
     public Set<AssignmentCategory> getAssignmentCategories(){
-//        List<AssignmentCategory> assignments = localCategoryRepository.findAll();
-//        String[] categoryNames = new String[assignmentCategories.size()];
-//        int i = 0;
-//        Iterator<AssignmentCategory> iterator = assignmentCategories.iterator();
-//        while(iterator.hasNext()) {
-//            categoryNames[i] = iterator.next().getCategoryName();
-//            i++;
-//        }
-//
-//        for(int i = 0; i < assignmentCategories.size(); i++) {
-//            categoryNames[i] = assignmentCategories.get(i).getCategoryName();
-//        }
         return assignmentCategories;
     }
+
+    public Set<Assignment> getAssignmentsByCategory(AssignmentCategory category) {
+        return assignments.stream().filter(assignment -> assignment.getCategory() == category).collect(Collectors.toSet());
+    }
+
     public void addAssignmentCategory(AssignmentCategory assignmentCategory) {
         this.assignmentCategories.add(assignmentCategory);
+        calculateGrades();
+    }
+
+    private void calculateGrades() {
+        assignmentCategories.stream().map(e -> {
+            Set<Assignment> filteredAssignments = getAssignmentsByCategory(e);
+            e.setNumberOfAssignments(filteredAssignments.size());
+            double totalAverage = filteredAssignments.stream().map(Assignment::getGrade).reduce(0.0, Double::sum);
+            e.setCategoryAverage(totalAverage / filteredAssignments.size());
+            return e;
+        });
+
+        actualGrade = assignmentCategories.stream().map(AssignmentCategory::getWeightedAverage).reduce(0.0, Double::sum);
     }
 
     public List<String> getAssignmentCategoryNames() {
@@ -84,7 +94,7 @@ public class Course extends AbstractEntity {
     public AssignmentCategory getAssignmentCategoryByName(String categoryName) {
         return assignmentCategories.stream()
                 .filter(category -> categoryName.equals(category.getCategoryName()))
-                .findAny()
+                .findFirst()
                 .orElse(null);
     }
 
@@ -117,7 +127,6 @@ public class Course extends AbstractEntity {
     public double getTestGradeAverage() {
         return testGradeAverage;
     }
-
 
     public double getTestCategoryWeight() {
         return testCategoryWeight;
