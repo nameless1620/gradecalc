@@ -1,4 +1,4 @@
-package com.nameless1620.gradecalc.ui.views.sandbox;
+package com.nameless1620.gradecalc.ui.views.gradecalculator;
 
 import com.nameless1620.gradecalc.backend.entity.Assignment;
 import com.nameless1620.gradecalc.backend.entity.AssignmentCategory;
@@ -14,7 +14,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.PageTitle;
@@ -22,10 +21,9 @@ import com.vaadin.flow.router.Route;
 
 import java.util.List;
 
-
-@PageTitle("GradeCalc | Joshika Sandbox")
-@Route(value = "joshikasandbox", layout = MainLayout.class)
-public class JoshikaSandboxView extends VerticalLayout {
+@PageTitle("GradeCalc | Grade Calculator")
+@Route(value = "", layout = MainLayout.class)
+public class GradeCalculatorView extends VerticalLayout {
 
     //declare local variables here
     private final CourseService courseService;
@@ -41,9 +39,9 @@ public class JoshikaSandboxView extends VerticalLayout {
     ComboBox<String> category = new ComboBox<>("Category");
 
     //this is the constructor for the class
-    public JoshikaSandboxView(CourseService courseService)
+    public GradeCalculatorView(CourseService courseService)
     {
-        addClassName("joshikasandbox-view");
+        addClassName("gradecalculator-view");
 
         //initial configuration of the view
         this.courseService = courseService;

@@ -1,13 +1,7 @@
 package com.nameless1620.gradecalc.ui;
 
-import com.nameless1620.gradecalc.ui.views.calculator.CalculatorView;
-import com.nameless1620.gradecalc.ui.views.dashboard.DashboardView;
-import com.nameless1620.gradecalc.ui.views.list.ListView;
+import com.nameless1620.gradecalc.ui.views.gradecalculator.GradeCalculatorView;
 import com.nameless1620.gradecalc.ui.views.resources.ResourcesView;
-import com.nameless1620.gradecalc.ui.views.sandbox.AryaSandboxView;
-import com.nameless1620.gradecalc.ui.views.sandbox.BhoomiSandboxView;
-import com.nameless1620.gradecalc.ui.views.sandbox.IsabellaSandboxView;
-import com.nameless1620.gradecalc.ui.views.sandbox.JoshikaSandboxView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -17,6 +11,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.HighlightConditions;
+import com.vaadin.flow.router.Router;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 
@@ -38,18 +33,14 @@ public class MainLayout extends AppLayout {
     }
 
     private void createDrawer() {
-        RouterLink listLink = new RouterLink("List", ListView.class);
-        listLink.setHighlightCondition(HighlightConditions.sameLocation());
+        RouterLink calcLink = new RouterLink("Grade Calculator", GradeCalculatorView.class);
+        calcLink.setHighlightCondition(HighlightConditions.sameLocation());
+        RouterLink resourceLink = new RouterLink("Resources", ResourcesView.class);
+        calcLink.setHighlightCondition(HighlightConditions.sameLocation());
 
         addToDrawer(new VerticalLayout(
-                listLink,
-                new RouterLink("Dashboard", DashboardView.class),
-                new RouterLink("Resources", ResourcesView.class),
-                new RouterLink("Calculator", CalculatorView.class),
-                new RouterLink("Arya Sandbox", AryaSandboxView.class),
-                new RouterLink("Joshika Sandbox", JoshikaSandboxView.class),
-                new RouterLink("Bhoomi Sandbox", BhoomiSandboxView.class),
-                new RouterLink("Isabella Sandbox", IsabellaSandboxView.class)
+              calcLink,
+              resourceLink
         ));
     }
 
