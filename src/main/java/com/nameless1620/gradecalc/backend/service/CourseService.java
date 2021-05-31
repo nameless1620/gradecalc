@@ -49,36 +49,10 @@ public class CourseService {
                                 course.addAssignmentCategory(new AssignmentCategory("Quiz", 25,6,89));
                                 course.addAssignmentCategory(new AssignmentCategory("Homework/Classwork", 5,5,89));
                                 course.addAssignmentCategory(new AssignmentCategory("Labs", 50,5,80));
-//                                Course::new
                                 return course;
                             })
                             .collect(Collectors.toList()));
         }
-
-
-//        if (courseRepository.count() == 0) {
-//            Random r = new Random(0);
-//            List<Course> courses = courseRepository.findAll();
-//            courseRepository.saveAll(
-//                    Stream.of("Gabrielle Patel", "Brian Robinson", "Eduardo Haugen",
-//                            "Koen Johansen", "Alejandro Macdonald", "Angel Karlsson", "Yahir Gustavsson", "Haiden Svensson",
-//                            "Emily Stewart", "Corinne Davis", "Ryann Davis", "Yurem Jackson", "Kelly Gustavsson",
-//                            "Eileen Walker", "Katelyn Martin", "Israel Carlsson", "Quinn Hansson", "Makena Smith",
-//                            "Danielle Watson", "Leland Harris", "Gunner Karlsen", "Jamar Olsson", "Lara Martin",
-//                            "Ann Andersson", "Remington Andersson", "Rene Carlsson", "Elvis Olsen", "Solomon Olsen",
-//                            "Jaydan Jackson", "Bernard Nilsen")
-//                            .map(name -> {
-//                                String[] split = name.split(" ");
-//                                Contact contact = new Contact();
-//                                contact.setFirstName(split[0]);
-//                                contact.setLastName(split[1]);
-//                                contact.setCompany(courses.get(r.nextInt(courses.size())));
-//                                contact.setStatus(Contact.Status.values()[r.nextInt(Contact.Status.values().length)]);
-//                                String email = (contact.getFirstName() + "." + contact.getLastName() + "@" + contact.getCompany().getName().replaceAll("[\\s-]", "") + ".com").toLowerCase();
-//                                contact.setEmail(email);
-//                                return contact;
-//                            }).collect(Collectors.toList()));
-//        }
     }
 
     public List<Course> fetchCourses(int offset, int limit) {
