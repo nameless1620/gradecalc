@@ -56,6 +56,7 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void configureCourseGrid() {
+        //COLUMN CONFIG
         courseGrid.setColumns();
         Grid.Column<Course> courseNameColumn = courseGrid
                 .addColumn(Course:: getCourseName).setHeader("Course Name");
@@ -67,44 +68,28 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addColumn(Course :: getAssignedWeight).setHeader("Assigned Weightage");
         courseGrid.addClassName("course-grid");
 
+        //DATA PROVIDER, BINDER, EDITOR
         DataProvider<Course, Void> dataProvider =
                 DataProvider.fromCallbacks(
                         // First callback fetches items based on a query
                         query -> {
                             // The index of the first item to load
                             int offset = query.getOffset();
-
                             // The number of items to load
                             int limit = query.getLimit();
-
                             List<Course> courses = courseService
                                     .fetchCourses(offset, limit);
-
                             return courses.stream();
                         },
                         // Second callback fetches the total number of items currently in the Grid.
                         // The grid can then use it to properly adjust the scrollbars.
                         query -> courseService.getCourseCount());
         courseGrid.setDataProvider(dataProvider);
-
-//        courseGrid.setItems(courseService.findAll());
         courseGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
-
-        //TODO: Figure out how to add single selection listener
-        courseGrid.addSelectionListener(selectionEvent ->
-                courseSelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
-
-        Button addCourseButton = new Button("Add Course", event -> {
-            addCourse();
-        });
-
-        Button removeCourseButton = new Button("Remove Course", event ->{
-            removeCourse();
-        });
-
         Binder<Course> binder = new Binder<>(Course.class);
         courseGrid.getEditor().setBinder(binder);
 
+        //EDITING NAME
         TextField courseNameField = new TextField();
         courseNameField.getElement()
                 .addEventListener("keydown",
@@ -114,6 +99,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .bind(Course::getCourseName, Course::setCourseName);
         courseNameColumn.setEditorComponent(courseNameField);
 
+        //EDITING DESIRED GRADE
         TextField courseDesiredGradeField = new TextField();
         courseDesiredGradeField.getElement()
                 .addEventListener("keydown",
@@ -125,27 +111,42 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .bind(Course::getDesiredGrade, Course::setDesiredGrade);
         desiredGradeColumn.setEditorComponent(courseDesiredGradeField);
 
+        //EVENTS
+        //TODO: Figure out how to add single selection listener
+        courseGrid.addSelectionListener(selectionEvent ->
+                courseSelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
         courseGrid.addItemDoubleClickListener(event -> {
             courseGrid.getEditor().editItem(event.getItem());
             courseNameField.focus();
         });
 
+        //FOOTER ROW
+        Button addCourseButton = new Button("Add Course", event -> {
+            addCourse();
+        });
+
+        Button removeCourseButton = new Button("Remove Course", event ->{
+            removeCourse();
+        });
+        //TODO add logic to show cumulative GPA
+//        TextField cumulativeActualGPATextField = new TextField();
+//        TextField cumulativeDesiredGPATextField = new TextField();
         FooterRow footerRow = courseGrid.appendFooterRow();
         footerRow.getCell(courseNameColumn).setComponent(addCourseButton);
         footerRow.getCell(actualGradeColumn).setComponent(removeCourseButton);
+//        footerRow.getCell(desiredGradeColumn).setComponent(cumulativeActualGPATextField);
+//        footerRow.getCell(assignedWeightageColumn).setComponent(cumulativeDesiredGPATextField);
         add(addCourseButton,removeCourseButton);
-
-//        courseGrid.asSingleSelect().addValueChangeListener(event -> {
-//            updateCategoryList();
-//        });
     }
 
     private void courseSelectionChange(Course course) {
+        //CHANGE SELECTED COURSE
         if (course != null) {
             lastSelectedCourse = course;
             categoryGrid.setItems(course.getAssignmentCategories());
             assignmentGrid.setItems(course.getAssignments());
         }
+        //CLEAR SUB-GRIDS
         else {
             categoryGrid.setItems();
             lastSelectedAssignmentCategory = null;
@@ -170,14 +171,6 @@ public class JoshikaSandboxView extends VerticalLayout {
         categoryGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
         Binder<AssignmentCategory> binder = new Binder<>(AssignmentCategory.class);
         categoryGrid.getEditor().setBinder(binder);
-
-        //GRID EVENTS
-        //TODO: Figure out how to add single selection listener
-        categoryGrid.addSelectionListener(selectionEvent ->
-                categorySelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
-        categoryGrid.addItemDoubleClickListener(event -> {
-            categoryGrid.getEditor().editItem(event.getItem());
-        });
 
         //CATEGORY NAME EDITOR
         TextField assignmentCategoryNameField = new TextField();
@@ -218,6 +211,15 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .bind(AssignmentCategory::getCategoryWeight, AssignmentCategory::setCategoryWeight);
         assignmentCategoryWeightColumn.setEditorComponent(assignmentCategoryWeightField);
 
+        //GRID EVENTS
+        //TODO: Figure out how to add single selection listener
+        categoryGrid.addSelectionListener(selectionEvent ->
+                categorySelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
+        categoryGrid.addItemDoubleClickListener(event -> {
+            categoryGrid.getEditor().editItem(event.getItem());
+            assignmentCategoryNameField.focus();
+        });
+
         //FOOTER ROW
         Button addCategoryButton = new Button("Add Category", event -> {
             addCategory();
@@ -251,6 +253,7 @@ public class JoshikaSandboxView extends VerticalLayout {
     }
 
     private void configureAssignmentGrid() {
+        //COLUMN CONFIG
         assignmentGrid.setColumns();
         Grid.Column<Assignment> assignmentNameColumn = assignmentGrid
                 .addColumn(Assignment::getName).setHeader("Name");
@@ -263,12 +266,13 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .addColumn(Assignment::getWrongQuestions).setHeader("Errors");
         Grid.Column<Assignment> assignmentGradeColumn = assignmentGrid
                 .addColumn(Assignment::getGrade).setHeader("Grade");
+
+        //BINDER AND EDITOR
+        Binder<Assignment> binder = new Binder<>(Assignment.class);
+        assignmentGrid.getEditor().setBinder(binder);
         assignmentGrid.setSelectionMode(Grid.SelectionMode.SINGLE);
 
-//        //TODO: Figure out how to add single selection listener
-//        assignmentGrid.addSelectionListener(selectionEvent ->
-//                assignmentSelectionChange(selectionEvent.getAllSelectedItems().stream().findFirst().orElse(null)));
-
+        //ADD AND REMOVE BUTTONS
         Button addAssignmentButton = new Button("Add Assignment", event -> {
             addAssignment();
         });
@@ -277,9 +281,7 @@ public class JoshikaSandboxView extends VerticalLayout {
         });
         Text assignmentInstructions = new Text("HINT: Double click a cell to edit");
 
-        Binder<Assignment> binder = new Binder<>(Assignment.class);
-        assignmentGrid.getEditor().setBinder(binder);
-
+        //ASSIGNMENT NAME EDITOR
         TextField assignmentNameField = new TextField();
         assignmentNameField.addValueChangeListener(
                 event -> {
@@ -287,11 +289,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                         if(!event.getOldValue().equals(event.getValue())) {
                             currentAssignment().setName(event.getValue());
                             persistCourseChanges(currentCourse());
-                            fullGridRefresh();
-                        }
-                    }
-                }
-        );
+                            fullGridRefresh();}}});
         // Close the editor in case of backward between components
         assignmentNameField.getElement()
                 .addEventListener("keydown",
@@ -302,6 +300,7 @@ public class JoshikaSandboxView extends VerticalLayout {
             .bind(Assignment::getName, Assignment::setName);
         assignmentNameColumn.setEditorComponent(assignmentNameField);
 
+        //ASSIGNMENT CATEGORY EDITOR
         Select<String> assignmentCategoryField = new Select<>();
         assignmentGrid.addSelectionListener(
                 event -> {
@@ -309,9 +308,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                             currentCourse().getAssignmentCategoryNames());
                   //TODO: switch to SingleSelectionEvent
                     assignmentSelectionChange(event.getAllSelectedItems().stream().findFirst().orElse(null));
-                }
-        );
-
+                });
         assignmentCategoryField.getElement()
                 .addEventListener("keydown",
                         event -> assignmentGrid.getEditor().cancel())
@@ -323,11 +320,10 @@ public class JoshikaSandboxView extends VerticalLayout {
                                 currentCourse().getAssignmentCategoryByName(event.getValue()));
                         persistCourseChanges(currentCourse());
                         fullGridRefresh();
-                    }
-                }
-        );
+                    }});
         assignmentCategoryColumn.setEditorComponent(assignmentCategoryField);
 
+        //ASSIGNMENT QUESTIONS EDITOR
         TextField assignmentQuestionsField = new TextField();
         assignmentQuestionsField.addValueChangeListener(
                 event -> {
@@ -336,10 +332,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                             currentAssignment().setQuestions(Double.parseDouble(event.getValue()));
                             persistCourseChanges(currentCourse());
                             fullGridRefresh();
-                        }
-                    }
-                }
-        );
+                        }}});
         // Close the editor in case of backward between components
         assignmentQuestionsField.getElement()
                 .addEventListener("keydown",
@@ -352,6 +345,7 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .bind(Assignment::getQuestions, Assignment::setQuestions);
         assignmentQuestionsColumn.setEditorComponent(assignmentQuestionsField);
 
+        //ASSIGNMENT ERRORS EDITOR
         TextField assignmentErrorsField = new TextField();
         assignmentErrorsField.addValueChangeListener(
                 event -> {
@@ -360,14 +354,8 @@ public class JoshikaSandboxView extends VerticalLayout {
                             currentAssignment().setWrongQuestions(Double.parseDouble(event.getValue()));
                             persistCourseChanges(currentCourse());
                             fullGridRefresh();
-                        }
-                    }
-                }
-        );
+                        }}});
         // Close the editor in case of backward between components
-//        assignmentErrorsField.getElement()
-//                .addEventListener("close"),
-//                    event -> assignmentGrid.
         assignmentErrorsField.getElement()
                 .addEventListener("keydown",
                         event -> assignmentGrid.getEditor().cancel())
@@ -379,11 +367,13 @@ public class JoshikaSandboxView extends VerticalLayout {
                 .bind(Assignment::getWrongQuestions, Assignment::setWrongQuestions);
         assignmentWrongQuestionsColumn.setEditorComponent(assignmentErrorsField);
 
+        //EVENTS
         assignmentGrid.addItemDoubleClickListener(event -> {
             assignmentGrid.getEditor().editItem(event.getItem());
             assignmentNameField.focus();
         });
 
+        //FOOTER ROW
         FooterRow footerRow = assignmentGrid.appendFooterRow();
         footerRow.getCell(assignmentNameColumn).setComponent(addAssignmentButton);
         footerRow.getCell(assignmentCategoryColumn).setComponent(removeAssignmentButton);
