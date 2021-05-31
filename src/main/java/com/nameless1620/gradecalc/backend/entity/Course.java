@@ -18,12 +18,14 @@ public class Course extends AbstractEntity {
     //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl
     //TODO https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl/51055523?stw=2#51055523
 
+    private String userName;
     private String courseName;
     private double actualGrade = 0;
     private double desiredGrade = 0;
     private double assignedWeight = 0.0;
 
     public Course() {
+
     }
 
     public Course(String name) {

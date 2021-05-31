@@ -40,17 +40,27 @@ public class CourseService {
             courseRepository.saveAll(
                     Stream.of("AP Calculus BC", "AP Physics Mech", "AP Computer Science", "AP Spanish Language", "Honors American Lit")
                             .map(name -> {
+                                AssignmentCategory test = new AssignmentCategory("Test", 20, 0, 0);
+                                AssignmentCategory quiz = new AssignmentCategory("Quiz", 25, 0, 0);
+                                AssignmentCategory homework = new AssignmentCategory("Homework/Classworkd", 5, 0, 0);
+                                AssignmentCategory labs = new AssignmentCategory("Labs", 50, 0, 0);
+
                                 Course course = new Course();
                                 course.setCourseName(name);
-                                course.addAssignments(new Assignment("Quiz 1", 10, 10));
-                                course.addAssignments(new Assignment("Unit 1 Test", 10, 5));
-                                course.addAssignments(new Assignment("Unit 2 Test", 10, 0));
-                                course.addAssignments(new Assignment("Unit 1: Homework", 100, 8));
-                                course.addAssignments(new Assignment("Unit 2: Lab", 15, 7));
-                                course.addAssignmentCategory(new AssignmentCategory("Test", 20,5,89));
-                                course.addAssignmentCategory(new AssignmentCategory("Quiz", 25,6,89));
-                                course.addAssignmentCategory(new AssignmentCategory("Homework/Classwork", 5,5,89));
-                                course.addAssignmentCategory(new AssignmentCategory("Labs", 50,5,80));
+
+                                course.addAssignmentCategory(test);
+                                course.addAssignmentCategory(quiz);
+                                course.addAssignmentCategory(homework);
+                                course.addAssignmentCategory(labs);
+
+                                Random random = new Random();
+
+                                course.addAssignments(new Assignment("Quiz 1", quiz, 10, random.nextInt(10)));
+                                course.addAssignments(new Assignment("Unit 1 Test", test, 100, random.nextInt(100)));
+                                course.addAssignments(new Assignment("Unit 2 Test", test, 100, random.nextInt(100)));
+                                course.addAssignments(new Assignment("Unit 1: Homework", homework, 100, random.nextInt(100)));
+                                course.addAssignments(new Assignment("Unit 2: Lab", labs, 15, random.nextInt(10)));
+                                course.calculateGrades();
                                 return course;
                             })
                             .collect(Collectors.toList()));

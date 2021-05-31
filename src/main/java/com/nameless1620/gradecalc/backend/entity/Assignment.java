@@ -10,7 +10,9 @@ public class Assignment extends AbstractEntity {
     private String name;
 
     @ManyToOne
+//    @JoinColumn(name = "category_id")
     private AssignmentCategory category;
+
     private double questions = 0;
     private double wrongQuestions = 0;
     private double grade = 0;
