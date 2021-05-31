@@ -38,13 +38,15 @@ public class CourseService {
     public void populateTestData() {
         if (courseRepository.count() == 0) {
             courseRepository.saveAll(
-                    Stream.of("Calculus", "Physics", "Computer Science")
+                    Stream.of("AP Calculus BC", "AP Physics Mech", "AP Computer Science", "AP Spanish Language", "Honors American Lit")
                             .map(name -> {
                                 Course course = new Course();
                                 course.setCourseName(name);
-                                course.addAssignments(new Assignment("Test 1", 10, 10));
-                                course.addAssignments(new Assignment("Test 2", 10, 5));
-                                course.addAssignments(new Assignment("Test 3", 10, 0));
+                                course.addAssignments(new Assignment("Quiz 1", 10, 10));
+                                course.addAssignments(new Assignment("Unit 1 Test", 10, 5));
+                                course.addAssignments(new Assignment("Unit 2 Test", 10, 0));
+                                course.addAssignments(new Assignment("Unit 1: Homework", 100, 8));
+                                course.addAssignments(new Assignment("Unit 2: Lab", 15, 7));
                                 course.addAssignmentCategory(new AssignmentCategory("Test", 20,5,89));
                                 course.addAssignmentCategory(new AssignmentCategory("Quiz", 25,6,89));
                                 course.addAssignmentCategory(new AssignmentCategory("Homework/Classwork", 5,5,89));
