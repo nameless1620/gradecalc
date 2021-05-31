@@ -42,7 +42,7 @@ public class CourseService {
                             .map(name -> {
                                 AssignmentCategory test = new AssignmentCategory("Test", 20, 0, 0);
                                 AssignmentCategory quiz = new AssignmentCategory("Quiz", 25, 0, 0);
-                                AssignmentCategory homework = new AssignmentCategory("Homework/Classworkd", 5, 0, 0);
+                                AssignmentCategory homework = new AssignmentCategory("Homework/Classwork", 5, 0, 0);
                                 AssignmentCategory labs = new AssignmentCategory("Labs", 50, 0, 0);
 
                                 Course course = new Course();
